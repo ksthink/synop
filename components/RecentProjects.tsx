@@ -8,11 +8,9 @@ export default function RecentProjects() {
   const [projects, setProjects] = useState<Project[]>([])
 
   useEffect(() => {
-    const all = getProjects()
-    const sorted = [...all].sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    )
-    setProjects(sorted.slice(0, 3))
+    getProjects()
+      .then((all) => setProjects(all.slice(0, 3)))
+      .catch(() => {})
   }, [])
 
   if (projects.length === 0) return null
@@ -46,9 +44,7 @@ export default function RecentProjects() {
 function formatDate(iso: string) {
   const d = new Date(iso)
   const now = new Date()
-  const diffMs = now.getTime() - d.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
   if (diffDays === 0) return '오늘'
   if (diffDays === 1) return '어제'
   if (diffDays < 7) return `${diffDays}일 전`

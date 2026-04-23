@@ -8,12 +8,12 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
 
   useEffect(() => {
-    setProjects(getProjects())
+    getProjects().then(setProjects).catch(() => {})
   }, [])
 
-  function handleDelete(id: string) {
-    deleteProject(id)
-    setProjects(getProjects())
+  async function handleDelete(id: string) {
+    await deleteProject(id)
+    setProjects((prev) => prev.filter((p) => p.id !== id))
   }
 
   return (
@@ -41,10 +41,7 @@ export default function ProjectsPage() {
             {projects.map((project) => (
               <li key={project.id}>
                 <div className="flex items-center gap-3 px-4 py-4 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors group">
-                  <Link
-                    href={`/write/${project.id}`}
-                    className="flex-1 min-w-0"
-                  >
+                  <Link href={`/write/${project.id}`} className="flex-1 min-w-0">
                     <p className="font-medium text-neutral-800 dark:text-neutral-100 truncate">
                       {project.title}
                     </p>

@@ -10,12 +10,18 @@ export default function NewProjectPage() {
   const today = new Date().toISOString().slice(0, 10)
   const [title, setTitle] = useState('')
   const [writingDate, setWritingDate] = useState(today)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim()) return
-    const project = createProject(title.trim(), writingDate)
-    router.push(`/write/${project.id}`)
+    if (!title.trim() || loading) return
+    setLoading(true)
+    try {
+      const project = await createProject(title.trim(), writingDate)
+      router.push(`/write/${project.id}`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -61,10 +67,10 @@ export default function NewProjectPage() {
 
           <button
             type="submit"
-            disabled={!title.trim()}
+            disabled={!title.trim() || loading}
             className="mt-2 py-3 rounded-lg bg-neutral-800 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium text-sm disabled:opacity-30 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
           >
-            집필 시작
+            {loading ? '생성 중...' : '집필 시작'}
           </button>
         </form>
       </div>

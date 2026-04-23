@@ -103,8 +103,9 @@ export default function Editor({ projectId }: Props) {
   useEffect(() => {
     if (!editor) return
     if (projectId) {
-      const project = getProject(projectId)
-      if (project?.content) editor.commands.setContent(project.content as any)
+      getProject(projectId).then((project) => {
+        if (project?.content) editor.commands.setContent(project.content as any)
+      })
       let t: ReturnType<typeof setTimeout> | null = null
       editor.on('update', () => {
         if (t) clearTimeout(t)

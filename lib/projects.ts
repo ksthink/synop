@@ -1,3 +1,5 @@
+import { getSupabase } from './supabase'
+
 export interface Project {
   id: string
   title: string
@@ -7,44 +9,65 @@ export interface Project {
   content: object | null
 }
 
-const KEY = 'synop_projects'
+interface Row {
+  id: string
+  title: string
+  writing_date: string
+  created_at: string
+  updated_at: string
+  content: object | null
+}
 
-export function getProjects(): Project[] {
-  if (typeof window === 'undefined') return []
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || '[]')
-  } catch {
-    return []
+function toProject(row: Row): Project {
+  return {
+    id: row.id,
+    title: row.title,
+    writingDate: row.writing_date,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    content: row.content,
   }
 }
 
-export function getProject(id: string): Project | null {
-  return getProjects().find((p) => p.id === id) ?? null
+export async function getProjects(): Promise<Project[]> {
+  const { data, error } = await getSupabase()
+    .from('projects')
+    .select('*')
+    .order('updated_at', { ascending: false })
+  if (error) throw error
+  return (data as Row[]).map(toProject)
 }
 
-export function createProject(title: string, writingDate: string): Project {
-  const now = new Date().toISOString()
-  const project: Project = {
-    id: crypto.randomUUID(),
-    title,
-    writingDate,
-    createdAt: now,
-    updatedAt: now,
-    content: null,
-  }
-  const projects = getProjects()
-  localStorage.setItem(KEY, JSON.stringify([project, ...projects]))
-  return project
+export async function getProject(id: string): Promise<Project | null> {
+  const { data, error } = await getSupabase()
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error) return null
+  return toProject(data as Row)
 }
 
-export function updateProjectContent(id: string, content: object): void {
-  const projects = getProjects().map((p) =>
-    p.id === id ? { ...p, content, updatedAt: new Date().toISOString() } : p
-  )
-  localStorage.setItem(KEY, JSON.stringify(projects))
+export async function createProject(title: string, writingDate: string): Promise<Project> {
+  const { data, error } = await getSupabase()
+    .from('projects')
+    .insert({ title, writing_date: writingDate })
+    .select()
+    .single()
+  if (error) throw error
+  return toProject(data as Row)
 }
 
-export function deleteProject(id: string): void {
-  const projects = getProjects().filter((p) => p.id !== id)
-  localStorage.setItem(KEY, JSON.stringify(projects))
+export async function updateProjectContent(id: string, content: object): Promise<void> {
+  await getSupabase()
+    .from('projects')
+    .update({ content })
+    .eq('id', id)
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  await getSupabase()
+    .from('projects')
+    .delete()
+    .eq('id', id)
 }
