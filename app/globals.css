@@ -86,7 +86,7 @@ body {
 
 /* ─── Character Cue (대사 화자) ─── */
 .tiptap .character-cue {
-  text-align: center;
+  text-align: left;
   font-weight: 700;
   letter-spacing: 0.06em;
   margin: 1.5em 0 0;
@@ -106,9 +106,14 @@ body {
 
 /* ─── Dialogue (대사) ─── */
 .tiptap .dialogue {
-  margin: 0.25em auto 1em;
-  padding: 0 4em;
+  margin: 0.15em 0 1em;
+  padding-left: 1.5em;
   text-align: left;
+  font-weight: 400;
+}
+
+.tiptap .dialogue strong {
+  font-weight: 400;
 }
 
 /* ─── Stage Direction (지문) ─── */
@@ -172,14 +177,19 @@ body {
 }
 
 .scenario-viewer .character-cue {
-  text-align: center;
+  text-align: left;
   font-weight: 700;
   margin: 1.2em 0 0;
 }
 
 .scenario-viewer .dialogue {
-  padding: 0 4em;
+  padding-left: 1.5em;
   margin-bottom: 1em;
+  font-weight: 400;
+}
+
+.scenario-viewer .dialogue strong {
+  font-weight: 400;
 }
 
 .scenario-viewer .stage-direction {
