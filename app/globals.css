@@ -22,5 +22,169 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Mulmaru", var(--font-geist-sans), serif;
+}
+
+/* ─── Editor base ─── */
+.tiptap {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--foreground);
+  counter-reset: scene-counter;
+}
+
+.tiptap p {
+  margin: 0 0 0.5em;
+}
+
+/* ─── Slugline (씬 제목) ─── */
+.tiptap .slugline {
+  counter-increment: scene-counter;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 2.5em 0 0.75em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.tiptap .slugline::before {
+  content: "S# " counter(scene-counter) ".  ";
+  color: #9ca3af;
+  font-weight: 400;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap .slugline {
+    border-bottom-color: #2a2a2a;
+  }
+  .tiptap .slugline::before {
+    color: #4b5563;
+  }
+}
+
+/* ─── Character (인물) ─── */
+.tiptap .character {
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 1.2em 0 0;
+  color: #1a1a1a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap .character {
+    color: #e5e5e5;
+  }
+}
+
+/* ─── Dialogue (대사) ─── */
+.tiptap .dialogue {
+  text-align: center;
+  margin: 0 auto 1em;
+  max-width: 60%;
+}
+
+/* ─── Stage direction (지문) ─── */
+.tiptap .stage-direction {
+  font-style: italic;
+  color: #9ca3af;
+  margin: 0.75em 0;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap .stage-direction {
+    color: #6b7280;
+  }
+}
+
+/* ─── Transition (장면 전환) ─── */
+.tiptap .transition {
+  text-align: right;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 1.5em 0;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap .transition {
+    color: #9ca3af;
+  }
+}
+
+/* ─── Effect mark (효과음) ─── */
+.tiptap .effect::before {
+  content: "E) ";
+  font-weight: 600;
+  font-style: normal;
+}
+
+.tiptap .effect {
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* ─── Blockquote (인용) ─── */
+.tiptap blockquote {
+  margin: 0.75em 0;
+  color: #555;
+}
+
+.tiptap blockquote p::before { content: '\201C'; }
+.tiptap blockquote p::after  { content: '\201D'; }
+
+@media (prefers-color-scheme: dark) {
+  .tiptap blockquote { color: #aaa; }
+}
+
+/* ─── Bold ─── */
+.tiptap strong { font-weight: 700; }
+
+/* ─── Placeholder ─── */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ─── Focus mode ─── */
+.focus-mode .tiptap > * {
+  opacity: 0.15;
+  transition: opacity 0.2s;
+}
+
+.focus-mode .tiptap > *:has(.ProseMirror-selectednode),
+.focus-mode .tiptap > *.ProseMirror-focused,
+.focus-mode .tiptap > *:focus-within {
+  opacity: 1;
+}
+
+/* ─── Print ─── */
+@media print {
+  .no-print { display: none !important; }
+
+  body {
+    font-family: "Batang", "바탕", Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+
+  @page {
+    margin: 2.5cm;
+    @bottom-right {
+      content: counter(page);
+      font-size: 9pt;
+    }
+  }
+
+  .tiptap .slugline { page-break-after: avoid; }
 }
