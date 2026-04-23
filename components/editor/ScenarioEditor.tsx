@@ -18,7 +18,7 @@ import DictionaryPanel from './DictionaryPanel'
 
 import { getDocument, upsertDocument } from '@/lib/documents'
 import { saveVersion } from '@/lib/versions'
-import { getCharacterNames, addCharacterIfMissing } from '@/lib/characters'
+import { getCharacterNames } from '@/lib/characters'
 import { exportMarkdown, exportPDF } from '@/lib/export'
 import { useEditorFont } from '@/hooks/useEditorFont'
 
@@ -166,25 +166,10 @@ export default function ScenarioEditor({ projectId }: Props) {
     }
   }
 
-  async function applySuggestion(name: string) {
+  function applySuggestion(name: string) {
     if (!editor) return
     editor.chain().focus().clearContent().insertContent(name).run()
     setAcRect(null)
-    if (!characters.includes(name)) {
-      await addCharacterIfMissing(projectId, name)
-      setCharacters((prev) => [...prev, name].sort())
-    }
-  }
-
-  async function handleAcEnter() {
-    if (!editor) return
-    const name = editor.state.selection.$from.parent.textContent.trim()
-    if (!name) return
-    setAcRect(null)
-    await addCharacterIfMissing(projectId, name)
-    if (!characters.includes(name)) {
-      setCharacters((prev) => [...prev, name].sort())
-    }
   }
 
   function scrollToScene(index: number) {
@@ -299,27 +284,21 @@ export default function ScenarioEditor({ projectId }: Props) {
       </div>
 
       {/* 캐릭터 자동완성 드롭다운 */}
-      {acRect && (
+      {acRect && acSuggestions.length > 0 && (
         <div
           className="fixed z-50 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40"
           style={{ left: Math.min(acRect.left, window.innerWidth - 176), top: acRect.top }}
           onMouseDown={(e) => e.preventDefault()}
         >
-          {acSuggestions.length > 0 ? (
-            acSuggestions.slice(0, 6).map((name) => (
-              <button
-                key={name}
-                onClick={() => applySuggestion(name)}
-                className="w-full text-left px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              >
-                {name}
-              </button>
-            ))
-          ) : (
-            <div className="px-3 py-2 text-xs text-neutral-400 dark:text-neutral-500">
-              Enter로 새 인물 등록
-            </div>
-          )}
+          {acSuggestions.slice(0, 6).map((name) => (
+            <button
+              key={name}
+              onClick={() => applySuggestion(name)}
+              className="w-full text-left px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            >
+              {name}
+            </button>
+          ))}
         </div>
       )}
     </div>
