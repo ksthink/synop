@@ -18,21 +18,21 @@ export default function ProjectHeader({ projectId, title }: { projectId: string;
   const isHub = !sectionLabel
 
   return (
-    <header className="no-print border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4">
+    <header className="no-print border-b border-neutral-200 dark:border-neutral-800 px-8 sm:px-12 py-6 flex items-center gap-6 sm:gap-8">
       <Link
         href={isHub ? '/write/projects' : `/write/${projectId}`}
-        className="flex-shrink-0 text-sm text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+        className="flex-shrink-0 text-xl text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
       >
         ←
       </Link>
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        <span className={`font-medium truncate ${sectionLabel ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <span className={`text-2xl font-medium truncate ${sectionLabel ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
           {title}
         </span>
         {sectionLabel && (
           <>
-            <span className="text-neutral-300 dark:text-neutral-600 flex-shrink-0">|</span>
-            <span className="font-medium text-neutral-800 dark:text-neutral-100 flex-shrink-0">
+            <span className="text-xl text-neutral-300 dark:text-neutral-600 flex-shrink-0">|</span>
+            <span className="text-2xl font-medium text-neutral-800 dark:text-neutral-100 flex-shrink-0">
               {sectionLabel}
             </span>
           </>
