@@ -100,7 +100,8 @@ export default function CharacterForm({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-8 py-12 flex flex-col gap-10">
+        <div className="min-h-full flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-2xl flex flex-col gap-10">
 
           <Field label="이름">
             <input
@@ -164,6 +165,7 @@ export default function CharacterForm({
             />
           </Field>
 
+        </div>
         </div>
       </div>
     </form>
