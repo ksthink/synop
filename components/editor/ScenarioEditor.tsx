@@ -262,20 +262,20 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         <div
           className="fixed z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-32"
           style={{ top: exportPos.top, left: exportPos.left }}
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => { editor && exportMarkdown(editor, documentTitle || undefined); setExportOpen(false) }}
             disabled={!editor}
             className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40"
           >
-            마크다운
+            .md
           </button>
           <button
             onClick={() => { exportPDF(); setExportOpen(false) }}
             className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
-            PDF
+            .pdf
           </button>
         </div>
       )}
