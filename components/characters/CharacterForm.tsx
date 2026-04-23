@@ -111,7 +111,7 @@ export default function CharacterForm({
         />
       </Field>
 
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8">
         <Field label="성별">
           <select
             value={gender}

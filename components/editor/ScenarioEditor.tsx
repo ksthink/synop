@@ -197,7 +197,7 @@ export default function ScenarioEditor({ projectId }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* 툴바 */}
-      <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-4 py-2 flex items-center gap-1 flex-wrap">
+      <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         <button
           onClick={() => editor?.chain().focus().insertContent({ type: 'sceneHeading', content: [] }).run()}
           className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
@@ -258,7 +258,7 @@ export default function ScenarioEditor({ projectId }: Props) {
       <div className="flex flex-1 overflow-hidden">
         {/* 에디터 본문 */}
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-2xl px-8 py-12" style={{ fontFamily: currentFamily }}>
+          <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12" style={{ fontFamily: currentFamily }}>
             <EditorContent editor={editor} className="tiptap" />
           </div>
         </div>
@@ -302,7 +302,7 @@ export default function ScenarioEditor({ projectId }: Props) {
       {acRect && (
         <div
           className="fixed z-50 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40"
-          style={{ left: acRect.left, top: acRect.top }}
+          style={{ left: Math.min(acRect.left, window.innerWidth - 176), top: acRect.top }}
           onMouseDown={(e) => e.preventDefault()}
         >
           {acSuggestions.length > 0 ? (

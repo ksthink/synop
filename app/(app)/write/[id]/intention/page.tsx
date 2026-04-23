@@ -35,7 +35,7 @@ export default function IntentionPage() {
   }
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 97px)' }}>
+    <div className="flex-1 flex flex-col overflow-hidden">
       <FreeEditor
         content={content}
         onSave={handleSave}

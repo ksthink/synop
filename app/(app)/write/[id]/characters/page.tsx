@@ -52,12 +52,12 @@ export default function CharactersPage() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* 탭 */}
-      <div className="flex border-b border-neutral-200 dark:border-neutral-800 px-6">
+      <div className="flex border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-6">
         {(['list', 'diagram'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`py-3 px-1 mr-6 text-sm border-b-2 transition-colors ${
+            className={`py-3 px-1 mr-4 sm:mr-6 text-sm border-b-2 transition-colors min-w-[4rem] ${
               tab === t
                 ? 'border-neutral-800 dark:border-neutral-300 text-neutral-800 dark:text-neutral-100 font-medium'
                 : 'border-transparent text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'

@@ -36,20 +36,20 @@ export default function NewProjectPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 bg-white dark:bg-neutral-900">
       <div className="w-full max-w-sm">
         <Link
           href="/write"
-          className="inline-block mb-10 text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
+          className="inline-block mb-8 sm:mb-10 text-sm text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
         >
           ← 뒤로
         </Link>
 
-        <h2 className="text-xl font-semibold text-neutral-800 mb-8">새 작품</h2>
+        <h2 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 mb-6 sm:mb-8">새 작품</h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-neutral-500">
+            <label className="text-sm text-neutral-500 dark:text-neutral-400">
               작품명 <span className="text-red-400">*</span>
             </label>
             <input
@@ -59,28 +59,28 @@ export default function NewProjectPage() {
               placeholder="제목을 입력하세요"
               autoFocus
               required
-              className="border-b border-neutral-300 bg-transparent py-2 text-neutral-800 placeholder-neutral-300 outline-none focus:border-neutral-600 transition-colors"
+              className="border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-2 text-neutral-800 dark:text-neutral-200 placeholder-neutral-300 dark:placeholder-neutral-600 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-neutral-500">작가명</label>
+            <label className="text-sm text-neutral-500 dark:text-neutral-400">작가명</label>
             <input
               type="text"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               placeholder="작가 이름 (선택)"
-              className="border-b border-neutral-300 bg-transparent py-2 text-neutral-800 placeholder-neutral-300 outline-none focus:border-neutral-600 transition-colors"
+              className="border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-2 text-neutral-800 dark:text-neutral-200 placeholder-neutral-300 dark:placeholder-neutral-600 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-neutral-500">집필일</label>
+            <label className="text-sm text-neutral-500 dark:text-neutral-400">집필일</label>
             <input
               type="date"
               value={startedAt}
               onChange={(e) => setStartedAt(e.target.value)}
-              className="border-b border-neutral-300 bg-transparent py-2 text-neutral-800 outline-none focus:border-neutral-600 transition-colors"
+              className="border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-2 text-neutral-800 dark:text-neutral-200 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors"
             />
           </div>
 
@@ -89,7 +89,7 @@ export default function NewProjectPage() {
           <button
             type="submit"
             disabled={!title.trim() || loading}
-            className="mt-2 py-3 rounded-lg bg-neutral-800 text-white text-sm font-medium disabled:opacity-40 hover:bg-neutral-700 transition-colors"
+            className="mt-2 py-3 rounded-lg bg-neutral-800 dark:bg-neutral-700 text-white text-sm font-medium disabled:opacity-40 hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors"
           >
             {loading ? '생성 중...' : '집필 시작'}
           </button>

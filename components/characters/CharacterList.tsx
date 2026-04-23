@@ -40,7 +40,7 @@ export default function CharacterList({ projectId, initialCharacters }: Props) {
 
   if (panelOpen) {
     return (
-      <div className="flex-1 overflow-y-auto flex justify-center px-6 py-12">
+      <div className="flex-1 overflow-y-auto flex justify-center px-4 sm:px-6 py-8 sm:py-12">
         <div className="w-full max-w-xl">
           <CharacterForm
             projectId={projectId}
@@ -55,8 +55,8 @@ export default function CharacterList({ projectId, initialCharacters }: Props) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <h2 className="font-semibold text-neutral-800 dark:text-neutral-100">등장인물</h2>
         <button
           onClick={() => setAdding(true)}

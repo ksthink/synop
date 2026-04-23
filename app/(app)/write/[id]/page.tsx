@@ -15,13 +15,13 @@ export default async function ProjectHubPage({
   const { id } = await params
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-16">
-      <div className="w-full max-w-lg grid grid-cols-2 gap-4">
+    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16">
+      <div className="w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {SECTIONS.map((section) => (
           <Link
             key={section.key}
             href={`/write/${id}/${section.key}`}
-            className="flex flex-col gap-2 p-8 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+            className="flex flex-col gap-2 p-5 sm:p-8 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
             <span className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
               {section.label}

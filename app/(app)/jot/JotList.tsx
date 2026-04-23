@@ -32,7 +32,7 @@ export default function JotList({ jottings: initial }: { jottings: Jotting[] }) 
       {jottings.map((jotting) => (
         <li
           key={jotting.id}
-          className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-5 py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
+          className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 sm:px-5 py-3 sm:py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
         >
           <Link href={`/jot/${jotting.id}`} className="flex-1 min-w-0">
             <p className="font-medium text-neutral-800 dark:text-neutral-100 truncate">{jotting.title}</p>

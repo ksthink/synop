@@ -40,7 +40,7 @@ export default function ProjectList({ projects: initial }: { projects: Project[]
       {projects.map((project) => (
         <li
           key={project.id}
-          className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-5 py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
+          className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 sm:px-5 py-3 sm:py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
         >
           <Link
             href={`/write/${project.id}`}

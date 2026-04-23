@@ -231,6 +231,13 @@ body {
   stroke: #4b5563;
 }
 
+/* ─── Mobile: prevent iOS input zoom ─── */
+@media screen and (max-width: 767px) {
+  input, textarea, select {
+    font-size: 16px;
+  }
+}
+
 /* ─── Print ─── */
 @media print {
   .no-print { display: none !important; }

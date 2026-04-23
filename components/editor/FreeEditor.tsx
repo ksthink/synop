@@ -87,7 +87,7 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-neutral-200 dark:border-neutral-800 px-4 py-2 flex items-center gap-1 flex-wrap">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         <ToolBtn
           active={editor?.isActive('bold')}
           onClick={() => editor?.chain().focus().toggleBold().run()}
@@ -150,7 +150,7 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-8 py-12" style={{ fontFamily: currentFamily }}>
+        <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12" style={{ fontFamily: currentFamily }}>
           <EditorContent editor={editor} className="tiptap" />
         </div>
       </div>

@@ -17,9 +17,9 @@ export default async function JotPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-12 bg-white dark:bg-neutral-900">
+    <div className="min-h-screen px-4 sm:px-6 py-8 sm:py-12 bg-white dark:bg-neutral-900">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-6 sm:mb-10">
           <div>
             <Link
               href="/"

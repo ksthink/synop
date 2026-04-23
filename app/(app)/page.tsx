@@ -10,9 +10,9 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white dark:bg-neutral-900">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 bg-white dark:bg-neutral-900">
       <div className="w-full max-w-xl">
-        <div className="flex justify-between items-center mb-16">
+        <div className="flex justify-between items-center mb-10 sm:mb-16">
           <h1 className="text-2xl font-semibold tracking-widest text-neutral-800 dark:text-neutral-100">
             SYNOP
           </h1>
@@ -64,7 +64,7 @@ function ModeCard({
   return (
     <Link
       href={href}
-      className="flex-1 flex flex-col items-center gap-2 py-12 px-6 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+      className="flex-1 flex flex-col items-center gap-2 py-8 sm:py-12 px-4 sm:px-6 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
     >
       <span className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">{label}</span>
       <span className="text-sm text-neutral-400 dark:text-neutral-500 text-center">{description}</span>
