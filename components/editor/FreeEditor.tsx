@@ -125,20 +125,21 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
 
       {/* 에디터 본문 */}
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12" style={{ fontFamily: currentFamily }}>
+        <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12 pb-16" style={{ fontFamily: currentFamily }}>
           <EditorContent editor={editor} className="tiptap" />
         </div>
       </div>
 
-      {/* 하단 상태바 */}
-      <div className="border-t border-neutral-100 dark:border-neutral-800 px-4 sm:px-8 py-1.5 flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
+      {/* 하단 상태바 — 브라우저 바닥 고정 */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 sm:px-8 py-1.5 flex items-center gap-2 text-xs text-neutral-400 dark:text-neutral-500">
         <span
           className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
             saveStatus === 'saved' ? 'bg-green-500' : 'bg-red-500'
           }`}
         />
-        <span className="text-neutral-300 dark:text-neutral-600">|</span>
+        <span className="mx-1 text-neutral-200 dark:text-neutral-700">|</span>
         <span>글자 {charCount.toLocaleString()}</span>
+        <span className="mx-1 text-neutral-200 dark:text-neutral-700">|</span>
       </div>
     </div>
   )

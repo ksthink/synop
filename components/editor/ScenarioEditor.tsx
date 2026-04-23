@@ -247,7 +247,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
       <div className="flex flex-1 overflow-hidden">
         {/* 에디터 본문 */}
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12" style={{ fontFamily: currentFamily }}>
+          <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12 pb-16" style={{ fontFamily: currentFamily }}>
             <EditorContent editor={editor} className="tiptap" />
           </div>
         </div>
@@ -281,23 +281,24 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         </aside>
       </div>
 
-      {/* 하단 통계바 */}
-      <div className="no-print border-t border-neutral-100 dark:border-neutral-800 px-4 sm:px-8 py-1.5 flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
+      {/* 하단 통계바 — 브라우저 바닥 고정 */}
+      <div className="no-print fixed bottom-0 left-0 right-0 z-40 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 sm:px-8 py-1.5 flex items-center gap-2 text-xs text-neutral-400 dark:text-neutral-500">
         <span
           title={saveStatus === 'saved' ? '저장됨' : saveStatus === 'error' ? '저장 실패' : '저장 중...'}
           className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
             saveStatus === 'saved' ? 'bg-green-500' : 'bg-red-500'
           }`}
         />
-        <span className="text-neutral-200 dark:text-neutral-700">|</span>
+        <span className="mx-1 text-neutral-200 dark:text-neutral-700">|</span>
         <span>씬 {scenes.length}</span>
-        <span className="text-neutral-200 dark:text-neutral-700">|</span>
+        <span className="mx-1 text-neutral-200 dark:text-neutral-700">|</span>
         <span>글자 {charCount.toLocaleString()}</span>
+        <span className="mx-1 text-neutral-200 dark:text-neutral-700">|</span>
       </div>
 
       {/* 네트워크 불안정 팝업 */}
       {showNetworkWarning && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-neutral-800 border border-red-200 dark:border-red-900 rounded-xl shadow-xl px-4 py-3 text-sm max-w-sm w-full mx-4">
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-neutral-800 border border-red-200 dark:border-red-900 rounded-xl shadow-xl px-4 py-3 text-sm max-w-sm w-[calc(100%-2rem)]">
           <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-pulse" />
           <span className="text-neutral-700 dark:text-neutral-200 flex-1">
             네트워크 연결이 불안정합니다. 내용이 저장되지 않을 수 있습니다.
