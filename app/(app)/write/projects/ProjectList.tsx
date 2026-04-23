@@ -43,7 +43,7 @@ export default function ProjectList({ projects: initial }: { projects: Project[]
           className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-5 py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
         >
           <Link
-            href={`/write/${project.id}/scenario`}
+            href={`/write/${project.id}`}
             className="flex-1 min-w-0"
           >
             <p className="font-medium text-neutral-800 dark:text-neutral-100 truncate">{project.title}</p>

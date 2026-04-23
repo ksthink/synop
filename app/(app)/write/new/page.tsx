@@ -28,7 +28,7 @@ export default function NewProjectPage() {
         user.id,
         { title: title.trim(), author: author.trim() || null, startedAt }
       )
-      router.push(`/write/${project.id}/scenario`)
+      router.push(`/write/${project.id}`)
     } catch {
       setError('프로젝트 생성에 실패했습니다.')
       setLoading(false)
