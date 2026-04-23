@@ -124,33 +124,29 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
           <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
 
           <FontSelector value={font} onChange={changeFont} />
-
-          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
-
-          <ShareButton contentId={documentId} contentType={contentType} />
-
-          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
-
-          {/* 내보내기 드롭다운 */}
-          <div className="relative flex-shrink-0">
-            <button
-              ref={exportBtnRef}
-              onClick={() => {
-                if (!exportOpen && exportBtnRef.current) {
-                  const r = exportBtnRef.current.getBoundingClientRect()
-                  setExportPos({ top: r.bottom + 4, left: r.left })
-                }
-                setExportOpen((v) => !v)
-              }}
-              className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
-            >
-              내보내기
-            </button>
-          </div>
         </div>
 
         {/* 우측 — 고정 */}
         <div className="flex items-center gap-1 flex-shrink-0 pl-2 border-l border-neutral-200 dark:border-neutral-700">
+          <ShareButton contentId={documentId} contentType={contentType} />
+
+          {/* 내보내기 드롭다운 */}
+          <button
+            ref={exportBtnRef}
+            onClick={() => {
+              if (!exportOpen && exportBtnRef.current) {
+                const r = exportBtnRef.current.getBoundingClientRect()
+                setExportPos({ top: r.bottom + 4, left: r.left })
+              }
+              setExportOpen((v) => !v)
+            }}
+            className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+          >
+            내보내기
+          </button>
+
+          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+
           <DictionaryPanel />
         </div>
       </div>
