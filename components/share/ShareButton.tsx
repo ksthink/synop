@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   createShareLink,
   getShareLinkByContent,
@@ -19,11 +19,28 @@ export default function ShareButton({ contentId, contentType }: Props) {
   const [days, setDays] = useState(7)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [panelPos, setPanelPos] = useState({ top: 0, right: 0 })
 
   useEffect(() => {
     if (!open) return
     getShareLinkByContent(contentId).then(setExisting)
   }, [open, contentId])
+
+  useEffect(() => {
+    if (!open) return
+    const close = () => setOpen(false)
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  function handleToggle() {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect()
+      setPanelPos({ top: r.bottom + 4, right: window.innerWidth - r.right })
+    }
+    setOpen((v) => !v)
+  }
 
   const shareUrl = (token: string) =>
     `${window.location.origin}/share/${token}`
@@ -56,14 +73,14 @@ export default function ShareButton({ contentId, contentType }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const isExpired =
-    existing && new Date(existing.expiresAt) < new Date()
+  const isExpired = existing && new Date(existing.expiresAt) < new Date()
 
   return (
-    <div className="relative">
+    <>
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+        ref={btnRef}
+        onClick={handleToggle}
+        className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors flex-shrink-0"
         title="공유 링크"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -76,7 +93,11 @@ export default function ShareButton({ contentId, contentType }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-9 z-30 w-72 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg p-4">
+        <div
+          className="fixed z-50 w-72 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg p-4"
+          style={{ top: panelPos.top, right: panelPos.right }}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">공유 링크</span>
             <button
@@ -140,6 +161,6 @@ export default function ShareButton({ contentId, contentType }: Props) {
           )}
         </div>
       )}
-    </div>
+    </>
   )
 }

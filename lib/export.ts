@@ -55,8 +55,10 @@ export function exportMarkdown(editor: Editor, title?: string) {
   a.href = url
   const date = new Date().toISOString().slice(0, 10)
   a.download = `${title ?? 'scenario'}_${date}.md`
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
+  document.body.removeChild(a)
+  setTimeout(() => URL.revokeObjectURL(url), 100)
 }
 
 export function exportPDF() {
