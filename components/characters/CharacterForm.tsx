@@ -70,8 +70,8 @@ export default function CharacterForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full">
-      <div className="border-b border-neutral-200 dark:border-neutral-800 px-6 py-2 flex items-center gap-3 flex-shrink-0">
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-10">
+      <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800">
         <button
           type="button"
           onClick={onClose}
@@ -79,95 +79,88 @@ export default function CharacterForm({
         >
           ← 목록
         </button>
-        <div className="flex-1" />
-        {error && <p className="text-xs text-red-500">{error}</p>}
-        {character && (
+        <div className="flex items-center gap-3">
+          {error && <p className="text-xs text-red-500">{error}</p>}
+          {character && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="text-sm text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+            >
+              삭제
+            </button>
+          )}
           <button
-            type="button"
-            onClick={handleDelete}
-            className="text-sm px-2 py-1.5 text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+            type="submit"
+            disabled={saving || !name.trim()}
+            className="text-sm px-4 py-1.5 rounded-lg bg-neutral-800 dark:bg-neutral-700 text-white disabled:opacity-40 hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors"
           >
-            삭제
+            {saving ? '저장 중...' : '저장'}
           </button>
-        )}
-        <button
-          type="submit"
-          disabled={saving || !name.trim()}
-          className="text-sm px-4 py-1.5 rounded-lg bg-neutral-800 dark:bg-neutral-700 text-white disabled:opacity-40 hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors"
-        >
-          {saving ? '저장 중...' : '저장'}
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="min-h-full flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-2xl flex flex-col gap-10">
-
-          <Field label="이름">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoFocus
-              placeholder="캐릭터 이름"
-              className="w-full border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-2 text-xl font-medium text-neutral-800 dark:text-neutral-200 placeholder-neutral-300 dark:placeholder-neutral-600 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors"
-            />
-          </Field>
-
-          <div className="grid grid-cols-3 gap-8">
-            <Field label="성별">
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="field-input"
-              >
-                <option value="">-</option>
-                <option value="남">남</option>
-                <option value="여">여</option>
-                <option value="기타">기타</option>
-              </select>
-            </Field>
-            <Field label="나이">
-              <input
-                type="number"
-                min={0}
-                max={200}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="field-input"
-              />
-            </Field>
-            <Field label="직업">
-              <input
-                value={job}
-                onChange={(e) => setJob(e.target.value)}
-                className="field-input"
-              />
-            </Field>
-          </div>
-
-          <Field label="요약">
-            <input
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="한 줄 소개"
-              className="field-input"
-            />
-          </Field>
-
-          <Field label="소개">
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="캐릭터에 대한 자세한 설명을 적어주세요"
-              rows={8}
-              className="field-input resize-none leading-relaxed"
-            />
-          </Field>
-
-        </div>
         </div>
       </div>
+
+      <Field label="이름">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          autoFocus
+          placeholder="캐릭터 이름"
+          className="w-full border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-2 text-xl font-medium text-neutral-800 dark:text-neutral-200 placeholder-neutral-300 dark:placeholder-neutral-600 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors"
+        />
+      </Field>
+
+      <div className="grid grid-cols-3 gap-8">
+        <Field label="성별">
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="field-input"
+          >
+            <option value="">-</option>
+            <option value="남">남</option>
+            <option value="여">여</option>
+            <option value="기타">기타</option>
+          </select>
+        </Field>
+        <Field label="나이">
+          <input
+            type="number"
+            min={0}
+            max={200}
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            className="field-input"
+          />
+        </Field>
+        <Field label="직업">
+          <input
+            value={job}
+            onChange={(e) => setJob(e.target.value)}
+            className="field-input"
+          />
+        </Field>
+      </div>
+
+      <Field label="요약">
+        <input
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+          placeholder="한 줄 소개"
+          className="field-input"
+        />
+      </Field>
+
+      <Field label="소개">
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="캐릭터에 대한 자세한 설명을 적어주세요"
+          rows={8}
+          className="field-input resize-none leading-relaxed"
+        />
+      </Field>
     </form>
   )
 }

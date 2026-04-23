@@ -40,13 +40,17 @@ export default function CharacterList({ projectId, initialCharacters }: Props) {
 
   if (panelOpen) {
     return (
-      <CharacterForm
-        projectId={projectId}
-        character={adding ? null : selectedChar}
-        onSave={handleSave}
-        onDelete={handleDelete}
-        onClose={closePanel}
-      />
+      <div className="flex-1 overflow-y-auto flex justify-center px-6 py-12">
+        <div className="w-full max-w-xl">
+          <CharacterForm
+            projectId={projectId}
+            character={adding ? null : selectedChar}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            onClose={closePanel}
+          />
+        </div>
+      </div>
     )
   }
 
