@@ -197,15 +197,17 @@ body {
 }
 
 /* ─── Free editor headings & lists ─── */
-.tiptap h2 {
-  font-size: 1.875rem;
+.tiptap h2,
+.ProseMirror h2 {
+  font-size: 1.875rem !important;
   font-weight: 700;
   margin: 1.5em 0 0.5em;
   color: var(--foreground);
 }
 
-.tiptap h3 {
-  font-size: 1.1rem;
+.tiptap h3,
+.ProseMirror h3 {
+  font-size: 1.1rem !important;
   font-weight: 600;
   margin: 1.2em 0 0.4em;
   color: var(--foreground);
