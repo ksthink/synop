@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 interface Sense {
   sense_no: string
@@ -24,6 +24,19 @@ export default function DictionaryPanel() {
   const [results, setResults] = useState<DictItem[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [panelPos, setPanelPos] = useState({ top: 0, right: 0 })
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  function handleToggle() {
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setPanelPos({
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      })
+    }
+    setOpen((v) => !v)
+  }
 
   async function handleSearch(q = query) {
     const term = q.trim()
@@ -47,16 +60,20 @@ export default function DictionaryPanel() {
   }
 
   return (
-    <div className="relative">
+    <>
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={buttonRef}
+        onClick={handleToggle}
         className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
       >
         사전
       </button>
 
       {open && (
-        <div className="absolute right-0 top-9 z-30 w-80 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg">
+        <div
+          className="fixed z-50 w-80 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg"
+          style={{ top: panelPos.top, right: panelPos.right }}
+        >
           <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">표준국어대사전</span>
             <button
@@ -127,6 +144,6 @@ export default function DictionaryPanel() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
