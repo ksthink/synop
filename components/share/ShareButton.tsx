@@ -63,9 +63,16 @@ export default function ShareButton({ contentId, contentType }: Props) {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+        className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+        title="공유 링크"
       >
-        공유
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="13" cy="4" r="1.5"/>
+          <circle cx="13" cy="12" r="1.5"/>
+          <circle cx="3" cy="8" r="1.5"/>
+          <line x1="4.5" y1="7.2" x2="11.5" y2="4.8"/>
+          <line x1="4.5" y1="8.8" x2="11.5" y2="11.2"/>
+        </svg>
       </button>
 
       {open && (

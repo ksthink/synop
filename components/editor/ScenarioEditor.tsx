@@ -215,9 +215,13 @@ export default function ScenarioEditor({ projectId }: Props) {
         <button
           onClick={handleSaveVersion}
           disabled={saving || !documentId}
-          className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
+          className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
+          title={saving ? '저장 중...' : saveMsg || '버전 저장'}
         >
-          {saving ? '저장 중...' : saveMsg || '버전 저장'}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 2v7M5 6l3 3 3-3"/>
+            <path d="M2.5 11.5v1A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5v-1"/>
+          </svg>
         </button>
 
         {documentId && (
