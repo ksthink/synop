@@ -29,7 +29,7 @@ export default function JotEditorClient({ jotting }: Props) {
   }, [jotting.id])
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900">
+    <div className="h-screen overflow-hidden flex flex-col bg-white dark:bg-neutral-900">
       <div className="border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4">
         <Link
           href="/jot"

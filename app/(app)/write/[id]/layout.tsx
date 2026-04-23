@@ -16,7 +16,7 @@ export default async function ProjectLayout({
   if (!project) notFound()
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900">
+    <div className="h-screen overflow-hidden flex flex-col bg-white dark:bg-neutral-900">
       <ProjectHeader projectId={id} title={project.title} />
       <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
     </div>

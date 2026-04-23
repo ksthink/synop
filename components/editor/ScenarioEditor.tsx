@@ -197,7 +197,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 overflow-hidden">
       {/* 툴바 */}
       <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 flex-shrink-0">
         {/* 좌측 — 스크롤 가능 */}
