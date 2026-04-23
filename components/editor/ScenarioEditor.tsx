@@ -3,13 +3,14 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import type { JSONContent } from '@tiptap/core'
 
 import { SceneHeading } from './extensions/SceneHeading'
 import { CharacterCue } from './extensions/CharacterCue'
 import { Dialogue } from './extensions/Dialogue'
 import { StageDirection } from './extensions/StageDirection'
+import { createSpeechLine } from './extensions/SpeechLine'
 
 import ShareButton from '@/components/share/ShareButton'
 import VersionPanel from './VersionPanel'
@@ -42,21 +43,18 @@ function extractScenes(doc: JSONContent): { text: string; index: number }[] {
 export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   const [documentId, setDocumentId] = useState<string | null>(initialDoc?.id ?? null)
   const [documentTitle, setDocumentTitle] = useState('')
-  const [characters, setCharacters] = useState<string[]>([])
   const [scenes, setScenes] = useState<{ text: string; index: number }[]>([])
   const [activeScene, setActiveScene] = useState<number>(-1)
   const [tocOpen, setTocOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
 
-  const [acQuery, setAcQuery] = useState('')
-  const [acRect, setAcRect] = useState<DOMRect | null>(null)
-  const acSuggestions = characters.filter(
-    (c) => acQuery === '' || c.toLowerCase().startsWith(acQuery.toLowerCase())
-  )
-
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const charactersRef = useRef<string[]>([])
   const { font, changeFont, currentFamily } = useEditorFont()
+
+  // stable extension created once, reads charactersRef at call time
+  const SpeechLineExt = useMemo(() => createSpeechLine(charactersRef), [])
 
   const editor = useEditor({
     extensions: [
@@ -73,13 +71,15 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         blockquote: false,
       }),
       SceneHeading,
-      CharacterCue,
-      Dialogue,
+      CharacterCue,   // kept for backward compat with existing docs
+      Dialogue,       // kept for backward compat with existing docs
       StageDirection,
+      SpeechLineExt,
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'sceneHeading') return '장소 (시간)'
           if (node.type.name === 'characterCue') return '인물명'
+          if (node.type.name === 'speechLine') return ''
           if (node.type.name === 'paragraph') return '# 씬 시작, [ 대사 화자...'
           return ''
         },
@@ -100,7 +100,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
       }
       return
     }
-    // fallback: 서버 pre-fetch 없이 직접 진입한 경우
     ;(async () => {
       let doc = await getDocument(projectId, 'scenario')
       if (!doc) doc = await upsertDocument(projectId, 'scenario', '')
@@ -109,27 +108,17 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         try { editor.commands.setContent(JSON.parse(doc.content)) } catch {}
       }
     })()
-  }, [editor, projectId]) // initialDoc은 서버에서 내려온 stable 값
+  }, [editor, projectId])
 
   useEffect(() => {
-    getCharacterNames(projectId).then(setCharacters)
+    getCharacterNames(projectId).then((names) => {
+      charactersRef.current = names
+    })
   }, [projectId])
 
   const handleUpdate = useCallback(() => {
     if (!editor || !documentId) return
-
     setScenes(extractScenes(editor.getJSON()))
-
-    const { $from } = editor.state.selection
-    if ($from.parent.type.name === 'characterCue') {
-      const query = $from.parent.textContent
-      setAcQuery(query)
-      const coords = editor.view.coordsAtPos(editor.state.selection.from)
-      setAcRect(new DOMRect(coords.left, coords.bottom + 4, 0, 0))
-    } else {
-      setAcRect(null)
-    }
-
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const content = JSON.stringify(editor.getJSON())
@@ -140,11 +129,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   useEffect(() => {
     if (!editor) return
     editor.on('update', handleUpdate)
-    editor.on('selectionUpdate', handleUpdate)
-    return () => {
-      editor.off('update', handleUpdate)
-      editor.off('selectionUpdate', handleUpdate)
-    }
+    return () => { editor.off('update', handleUpdate) }
   }, [editor, handleUpdate])
 
   async function handleSaveVersion() {
@@ -168,15 +153,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
     } catch {
       editor.commands.setContent(content)
     }
-  }
-
-  function applySuggestion(name: string) {
-    if (!editor) return
-    const { $from } = editor.state.selection
-    const start = $from.start()
-    const end = $from.end()
-    editor.chain().focus().deleteRange({ from: start, to: end }).insertContentAt(start, name).run()
-    setAcRect(null)
   }
 
   function scrollToScene(index: number) {
@@ -256,7 +232,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
                   ? 'text-neutral-800 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800'
                   : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200'
               }`}
-              title="목차 토글"
             >
               목차
             </button>
@@ -300,25 +275,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
           </div>
         </aside>
       </div>
-
-      {/* 캐릭터 자동완성 드롭다운 */}
-      {acRect && acSuggestions.length > 0 && (
-        <div
-          className="fixed z-50 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40"
-          style={{ left: Math.min(acRect.left, window.innerWidth - 176), top: acRect.top }}
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          {acSuggestions.slice(0, 6).map((name) => (
-            <button
-              key={name}
-              onClick={() => applySuggestion(name)}
-              className="w-full text-left px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-            >
-              {name}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

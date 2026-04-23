@@ -1,4 +1,4 @@
-import { Node, mergeAttributes, InputRule } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core'
 
 // 자동완성 상태는 editor.storage에 보관 — React 컴포넌트에서 읽는다
 export const CharacterCue = Node.create({
@@ -53,25 +53,4 @@ export const CharacterCue = Node.create({
     }
   },
 
-  addInputRules() {
-    return [
-      new InputRule({
-        find: /^\[\s?$/,
-        handler: ({ state, range }) => {
-          const { tr } = state
-          const $pos = state.doc.resolve(range.from)
-          if (
-            !$pos
-              .node(-1)
-              .canReplaceWith($pos.index(-1), $pos.indexAfter(-1), this.type)
-          )
-            return null
-          tr.setBlockType(range.from, range.to, this.type).deleteRange(
-            range.from,
-            range.to
-          )
-        },
-      }),
-    ]
-  },
 })
