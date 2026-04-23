@@ -68,3 +68,15 @@ export async function upsertDocument(
   if (error) throw error
   return toDocument(data as DocumentRow)
 }
+
+export async function updateDocument(
+  id: string,
+  content: string,
+  supabase?: SupabaseClient
+): Promise<void> {
+  const { error } = await client(supabase)
+    .from('documents')
+    .update({ content })
+    .eq('id', id)
+  if (error) throw error
+}

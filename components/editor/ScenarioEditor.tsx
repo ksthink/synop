@@ -16,7 +16,7 @@ import VersionPanel from './VersionPanel'
 import FontSelector from './FontSelector'
 import DictionaryPanel from './DictionaryPanel'
 
-import { getDocument, upsertDocument } from '@/lib/documents'
+import { getDocument, upsertDocument, updateDocument } from '@/lib/documents'
 import { saveVersion } from '@/lib/versions'
 import { getCharacterNames } from '@/lib/characters'
 import { exportMarkdown, exportPDF } from '@/lib/export'
@@ -24,6 +24,7 @@ import { useEditorFont } from '@/hooks/useEditorFont'
 
 interface Props {
   projectId: string
+  initialDoc?: { id: string; content: string }
 }
 
 function extractScenes(doc: JSONContent): { text: string; index: number }[] {
@@ -38,8 +39,8 @@ function extractScenes(doc: JSONContent): { text: string; index: number }[] {
   return items
 }
 
-export default function ScenarioEditor({ projectId }: Props) {
-  const [documentId, setDocumentId] = useState<string | null>(null)
+export default function ScenarioEditor({ projectId, initialDoc }: Props) {
+  const [documentId, setDocumentId] = useState<string | null>(initialDoc?.id ?? null)
   const [documentTitle, setDocumentTitle] = useState('')
   const [characters, setCharacters] = useState<string[]>([])
   const [scenes, setScenes] = useState<{ text: string; index: number }[]>([])
@@ -93,19 +94,22 @@ export default function ScenarioEditor({ projectId }: Props) {
 
   useEffect(() => {
     if (!editor) return
+    if (initialDoc) {
+      if (initialDoc.content) {
+        try { editor.commands.setContent(JSON.parse(initialDoc.content)) } catch {}
+      }
+      return
+    }
+    // fallback: 서버 pre-fetch 없이 직접 진입한 경우
     ;(async () => {
       let doc = await getDocument(projectId, 'scenario')
       if (!doc) doc = await upsertDocument(projectId, 'scenario', '')
       setDocumentId(doc.id)
       if (doc.content) {
-        try {
-          editor.commands.setContent(JSON.parse(doc.content))
-        } catch {
-          // plain text fallback
-        }
+        try { editor.commands.setContent(JSON.parse(doc.content)) } catch {}
       }
     })()
-  }, [editor, projectId])
+  }, [editor, projectId]) // initialDoc은 서버에서 내려온 stable 값
 
   useEffect(() => {
     getCharacterNames(projectId).then(setCharacters)
@@ -129,9 +133,9 @@ export default function ScenarioEditor({ projectId }: Props) {
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const content = JSON.stringify(editor.getJSON())
-      await upsertDocument(projectId, 'scenario', content)
+      await updateDocument(documentId, content)
     }, 500)
-  }, [editor, documentId, projectId])
+  }, [editor, documentId])
 
   useEffect(() => {
     if (!editor) return
@@ -148,7 +152,7 @@ export default function ScenarioEditor({ projectId }: Props) {
     setSaving(true)
     try {
       const content = JSON.stringify(editor.getJSON())
-      await upsertDocument(projectId, 'scenario', content)
+      await updateDocument(documentId, content)
       await saveVersion(documentId, content)
       setSaveMsg('저장됨')
       setTimeout(() => setSaveMsg(''), 2000)

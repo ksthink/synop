@@ -7,6 +7,14 @@ const ScenarioEditor = dynamic(
   { ssr: false }
 )
 
-export default function ScenarioPageClient({ projectId }: { projectId: string }) {
-  return <ScenarioEditor projectId={projectId} />
+interface InitialDoc { id: string; content: string }
+
+export default function ScenarioPageClient({
+  projectId,
+  initialDoc,
+}: {
+  projectId: string
+  initialDoc: InitialDoc
+}) {
+  return <ScenarioEditor projectId={projectId} initialDoc={initialDoc} />
 }
