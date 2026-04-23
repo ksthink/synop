@@ -14,11 +14,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --diagram-dot: #e5e7eb;
 }
 
 .dark {
   --background: #1a1a1a;
   --foreground: #e5e5e5;
+  --diagram-dot: #3a3a3a;
 }
 
 @theme inline {
