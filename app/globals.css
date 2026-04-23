@@ -116,6 +116,23 @@ body {
   font-weight: 400;
 }
 
+/* ─── Character Input (이름 입력 단계) ─── */
+.tiptap .speech-name-input-block {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 1.2em 0 0;
+  color: #1a1a1a;
+}
+
+.dark .tiptap .speech-name-input-block {
+  color: #e5e5e5;
+}
+
+.tiptap .speech-name-input-block.is-empty::before {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 /* ─── Speech Line (인물 + 대사 인라인) ─── */
 .tiptap .speech-line {
   display: flex;

@@ -11,6 +11,7 @@ import { CharacterCue } from './extensions/CharacterCue'
 import { Dialogue } from './extensions/Dialogue'
 import { StageDirection } from './extensions/StageDirection'
 import { createSpeechLine } from './extensions/SpeechLine'
+import { createCharacterInput } from './extensions/CharacterInput'
 
 import ShareButton from '@/components/share/ShareButton'
 import VersionPanel from './VersionPanel'
@@ -53,8 +54,9 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   const charactersRef = useRef<string[]>([])
   const { font, changeFont, currentFamily } = useEditorFont()
 
-  // stable extension created once, reads charactersRef at call time
-  const SpeechLineExt = useMemo(() => createSpeechLine(charactersRef), [])
+  // stable extensions created once; read charactersRef at call time
+  const SpeechLineExt = useMemo(() => createSpeechLine(), [])
+  const CharacterInputExt = useMemo(() => createCharacterInput(charactersRef), [])
 
   const editor = useEditor({
     extensions: [
@@ -71,14 +73,16 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         blockquote: false,
       }),
       SceneHeading,
-      CharacterCue,   // kept for backward compat with existing docs
-      Dialogue,       // kept for backward compat with existing docs
+      CharacterCue,      // kept for backward compat with existing docs
+      Dialogue,          // kept for backward compat with existing docs
       StageDirection,
+      CharacterInputExt,
       SpeechLineExt,
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'sceneHeading') return '장소 (시간)'
           if (node.type.name === 'characterCue') return '인물명'
+          if (node.type.name === 'characterInput') return '인물명'
           if (node.type.name === 'speechLine') return ''
           if (node.type.name === 'paragraph') return '# 씬 시작, [ 대사 화자...'
           return ''
