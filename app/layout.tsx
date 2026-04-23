@@ -1,36 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Nanum_Gothic } from 'next/font/google'
+import './globals.css'
+import ThemeProvider from '@/components/ThemeProvider'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const nanumGothic = Nanum_Gothic({
+  weight: ['400', '700', '800'],
+  subsets: ['latin'],
+  variable: '--font-nanum-gothic',
+})
 
 export const metadata: Metadata = {
-  title: "Synop — 시나리오 에디터",
-  description: "시나리오 작성에 특화된 마크다운 에디터",
-};
+  title: 'Synop — 시나리오 에디터',
+  description: '한국 시나리오 작가를 위한 전문 집필 도구',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <head>
-        <link rel="stylesheet" href="https://font.ksthink.com/f/mulmaru.css" />
-      </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ko" className={`${nanumGothic.variable} h-full`}>
+      <body className="min-h-full flex flex-col bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
-  );
+  )
 }

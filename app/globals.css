@@ -1,28 +1,36 @@
+@import url("https://font.ksthink.com/f/iyagiggc.css");
+@import url("https://font.ksthink.com/f/mulmaru.css");
+@import url("https://font.ksthink.com/f/kopub-dotum-medium.css");
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .field-input {
+    @apply w-full border-b border-neutral-300 dark:border-neutral-600 bg-transparent py-1.5 text-sm text-neutral-800 dark:text-neutral-200 outline-none focus:border-neutral-600 dark:focus:border-neutral-400 transition-colors;
+  }
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+.dark {
+  --background: #1a1a1a;
+  --foreground: #e5e5e5;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: 'Mulmaru', var(--font-nanum-gothic), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Mulmaru", var(--font-geist-sans), serif;
+  font-family: 'Mulmaru', var(--font-nanum-gothic), "Nanum Gothic", sans-serif;
 }
 
 /* ─── Editor base ─── */
@@ -37,98 +45,148 @@ body {
   margin: 0 0 0.5em;
 }
 
-/* ─── Slugline (씬 제목) ─── */
-.tiptap .slugline {
+/* ─── Scene Heading (씬 제목) ─── */
+.tiptap {
+  counter-reset: scene-counter;
+}
+
+.tiptap .scene-heading {
   counter-increment: scene-counter;
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   margin: 2.5em 0 0.75em;
-  padding-bottom: 0.3em;
+  padding-bottom: 0.35em;
   border-bottom: 1px solid #e5e5e5;
 }
 
-.tiptap .slugline::before {
-  content: "S# " counter(scene-counter) ".  ";
+.dark .tiptap .scene-heading {
+  border-bottom-color: #3a3a3a;
+}
+
+.tiptap .scene-heading::before {
+  content: "S#" counter(scene-counter) ". ";
   color: #9ca3af;
   font-weight: 400;
   font-size: 0.85em;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap .slugline {
-    border-bottom-color: #2a2a2a;
-  }
-  .tiptap .slugline::before {
-    color: #4b5563;
-  }
+.tiptap .scene-heading.is-empty::after {
+  content: attr(data-placeholder);
+  color: #d1d5db;
+  pointer-events: none;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-/* ─── Character (인물) ─── */
-.tiptap .character {
+/* ─── Character Cue (대사 화자) ─── */
+.tiptap .character-cue {
   text-align: center;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 1.2em 0 0;
+  letter-spacing: 0.06em;
+  margin: 1.5em 0 0;
   color: #1a1a1a;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap .character {
-    color: #e5e5e5;
-  }
+.dark .tiptap .character-cue {
+  color: #e5e5e5;
+}
+
+.tiptap .character-cue.is-empty::after {
+  content: attr(data-placeholder);
+  color: #d1d5db;
+  pointer-events: none;
+  font-weight: 400;
 }
 
 /* ─── Dialogue (대사) ─── */
 .tiptap .dialogue {
-  text-align: center;
-  margin: 0 auto 1em;
-  max-width: 60%;
+  margin: 0.25em auto 1em;
+  padding: 0 4em;
+  text-align: left;
 }
 
-/* ─── Stage direction (지문) ─── */
+/* ─── Stage Direction (지문) ─── */
 .tiptap .stage-direction {
-  font-style: italic;
-  color: #9ca3af;
-  margin: 0.75em 0;
-  text-align: center;
-}
-
-@media (prefers-color-scheme: dark) {
-  .tiptap .stage-direction {
-    color: #6b7280;
-  }
-}
-
-/* ─── Transition (장면 전환) ─── */
-.tiptap .transition {
-  text-align: right;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin: 1.5em 0;
-  color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-  .tiptap .transition {
-    color: #9ca3af;
-  }
-}
-
-/* ─── Effect mark (효과음) ─── */
-.tiptap .effect::before {
-  content: "E) ";
-  font-weight: 600;
-  font-style: normal;
-}
-
-.tiptap .effect {
-  font-style: italic;
   color: #6b7280;
+  margin: 0.75em 0;
+}
+
+.dark .tiptap .stage-direction {
+  color: #9ca3af;
+}
+
+/* ─── Free editor headings & lists ─── */
+.tiptap h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1.5em 0 0.5em;
+  color: var(--foreground);
+}
+
+.tiptap h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.2em 0 0.4em;
+  color: var(--foreground);
+}
+
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0 1em;
+}
+
+.tiptap li {
+  margin: 0.2em 0;
+}
+
+/* ─── 공유 뷰어 ─── */
+.scenario-viewer .scene-heading {
+  counter-increment: scene-counter;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 2em 0 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dark .scenario-viewer .scene-heading {
+  border-bottom-color: #3a3a3a;
+}
+
+.scenario-viewer .scene-heading::before {
+  content: "S#" counter(scene-counter) ". ";
+  color: #9ca3af;
+  font-weight: 400;
+  font-size: 0.85em;
+}
+
+.scenario-viewer {
+  counter-reset: scene-counter;
+}
+
+.scenario-viewer .character-cue {
+  text-align: center;
+  font-weight: 700;
+  margin: 1.2em 0 0;
+}
+
+.scenario-viewer .dialogue {
+  padding: 0 4em;
+  margin-bottom: 1em;
+}
+
+.scenario-viewer .stage-direction {
+  color: #6b7280;
+  margin: 0.5em 0;
+}
+
+.dark .scenario-viewer .stage-direction {
+  color: #9ca3af;
 }
 
 /* ─── Blockquote (인용) ─── */
@@ -137,12 +195,12 @@ body {
   color: #555;
 }
 
+.dark .tiptap blockquote {
+  color: #aaa;
+}
+
 .tiptap blockquote p::before { content: '\201C'; }
 .tiptap blockquote p::after  { content: '\201D'; }
-
-@media (prefers-color-scheme: dark) {
-  .tiptap blockquote { color: #aaa; }
-}
 
 /* ─── Bold ─── */
 .tiptap strong { font-weight: 700; }
@@ -168,6 +226,11 @@ body {
   opacity: 1;
 }
 
+/* ─── Diagram dark mode ─── */
+.dark polyline {
+  stroke: #4b5563;
+}
+
 /* ─── Print ─── */
 @media print {
   .no-print { display: none !important; }
@@ -176,6 +239,8 @@ body {
     font-family: "Batang", "바탕", Georgia, serif;
     font-size: 11pt;
     line-height: 1.6;
+    color: #000 !important;
+    background: #fff !important;
   }
 
   @page {
@@ -186,5 +251,12 @@ body {
     }
   }
 
-  .tiptap .slugline { page-break-after: avoid; }
+  .tiptap .scene-heading { page-break-after: avoid; }
+
+  .tiptap .scene-heading,
+  .tiptap .character-cue,
+  .tiptap .dialogue,
+  .tiptap .stage-direction {
+    color: #000 !important;
+  }
 }

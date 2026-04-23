@@ -2,56 +2,59 @@ import { Editor } from '@tiptap/react'
 import { JSONContent } from '@tiptap/core'
 
 function inlineToMd(node: JSONContent): string {
-  if (!node) return ''
-  if (node.type !== 'text') return ''
+  if (!node || node.type !== 'text') return ''
   let text = node.text || ''
   const marks = node.marks || []
   if (marks.some((m) => m.type === 'bold')) text = `**${text}**`
-  if (marks.some((m) => m.type === 'effect')) text = `*${text}*`
+  if (marks.some((m) => m.type === 'italic')) text = `*${text}*`
   return text
 }
 
-function nodeToMd(node: JSONContent, sceneIndex: { n: number }): string {
+function nodeToMd(node: JSONContent): string {
   if (!node) return ''
   const inline = () => (node.content || []).map(inlineToMd).join('')
-  const children = () => (node.content || []).map((n) => nodeToMd(n, sceneIndex)).filter(Boolean).join('\n')
+  const children = () => (node.content || []).map(nodeToMd).filter(Boolean).join('\n')
 
   switch (node.type) {
     case 'doc':
       return children()
-    case 'slugline':
-      sceneIndex.n++
+    case 'sceneHeading':
       return `## ${inline()}`
-    case 'character':
-      return `[${inline()}]`
+    case 'characterCue':
+      return `**${inline()}**`
     case 'dialogue':
       return inline()
     case 'stageDirection':
-      return `(${inline().replace(/^\(|\)$/g, '')})`
-    case 'transition':
-      return `>> ${inline()}`
+      return `*(${inline()})*`
     case 'paragraph':
       return inline()
-    case 'blockquote':
-      return children().split('\n').map((l) => `> ${l}`).join('\n')
+    case 'heading': {
+      const level = node.attrs?.level ?? 2
+      return `${'#'.repeat(level)} ${inline()}`
+    }
+    case 'bulletList':
+      return children()
+    case 'listItem':
+      return `- ${children()}`
     default:
       return inline()
   }
 }
 
-export function exportMarkdown(editor: Editor) {
+export function exportMarkdown(editor: Editor, title?: string) {
   const json = editor.getJSON()
-  const idx = { n: 0 }
-  const md = (json.content || [])
-    .map((n) => nodeToMd(n, idx))
+  const lines = (json.content || [])
+    .map(nodeToMd)
     .filter(Boolean)
     .join('\n\n')
+  const md = title ? `# ${title}\n\n${lines}` : lines
 
   const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'scenario.md'
+  const date = new Date().toISOString().slice(0, 10)
+  a.download = `${title ?? 'scenario'}_${date}.md`
   a.click()
   URL.revokeObjectURL(url)
 }

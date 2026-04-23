@@ -19,7 +19,7 @@ import Toc from './Toc'
 import AssetPanel from './AssetPanel'
 
 import { setupAutoSave, loadDraft } from '@/lib/storage'
-import { getProject, updateProjectContent } from '@/lib/projects'
+import { getProject } from '@/lib/projects'
 import { initSounds, playKeySound } from '@/lib/typewriterSound'
 
 interface Props {
@@ -103,14 +103,7 @@ export default function Editor({ projectId }: Props) {
   useEffect(() => {
     if (!editor) return
     if (projectId) {
-      getProject(projectId).then((project) => {
-        if (project?.content) editor.commands.setContent(project.content as any)
-      })
-      let t: ReturnType<typeof setTimeout> | null = null
-      editor.on('update', () => {
-        if (t) clearTimeout(t)
-        t = setTimeout(() => updateProjectContent(projectId, editor.getJSON()), 500)
-      })
+      // Phase 2에서 시나리오 에디터 재구현 예정
     } else {
       const draft = loadDraft()
       if (draft) editor.commands.setContent(draft as any)
