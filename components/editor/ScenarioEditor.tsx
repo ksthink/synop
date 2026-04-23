@@ -168,7 +168,10 @@ export default function ScenarioEditor({ projectId }: Props) {
 
   function applySuggestion(name: string) {
     if (!editor) return
-    editor.chain().focus().clearContent().insertContent(name).run()
+    const { $from } = editor.state.selection
+    const start = $from.start()
+    const end = $from.end()
+    editor.chain().focus().deleteRange({ from: start, to: end }).insertContentAt(start, name).run()
     setAcRect(null)
   }
 
