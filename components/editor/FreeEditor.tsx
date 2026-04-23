@@ -34,6 +34,8 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
   const exportBtnRef = useRef<HTMLButtonElement>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportPos, setExportPos] = useState({ top: 0, left: 0 })
+  const [toolbarVisible, setToolbarVisible] = useState(true)
+  const lastScrollY = useRef(0)
 
   const editor = useEditor({
     extensions: [
@@ -83,8 +85,10 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* 툴바 */}
-      <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 flex-shrink-0">
+      {/* 툴바 — 스크롤 다운 시 숨김 */}
+      <div className={`no-print grid transition-[grid-template-rows] duration-200 flex-shrink-0 ${toolbarVisible ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+      <div className="overflow-hidden">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1">
         {/* 좌측 — 스크롤 가능 */}
         <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           <ToolBtn
@@ -150,6 +154,8 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
           <DictionaryPanel />
         </div>
       </div>
+      </div>
+      </div>
 
       {/* 내보내기 드롭다운 패널 */}
       {exportOpen && (
@@ -175,7 +181,15 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
       )}
 
       {/* 에디터 본문 */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto"
+        onScroll={(e) => {
+          const current = e.currentTarget.scrollTop
+          const delta = current - lastScrollY.current
+          if (Math.abs(delta) > 4) setToolbarVisible(delta < 0 || current < 10)
+          lastScrollY.current = current
+        }}
+      >
         <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12 pb-16" style={{ fontFamily: currentFamily }}>
           <EditorContent editor={editor} className="tiptap" />
         </div>
