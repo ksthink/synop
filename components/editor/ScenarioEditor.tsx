@@ -14,12 +14,10 @@ import { createSpeechLine } from './extensions/SpeechLine'
 import { createCharacterInput } from './extensions/CharacterInput'
 
 import ShareButton from '@/components/share/ShareButton'
-import VersionPanel from './VersionPanel'
 import FontSelector from './FontSelector'
 import DictionaryPanel from './DictionaryPanel'
 
 import { getDocument, upsertDocument, updateDocument } from '@/lib/documents'
-import { saveVersion } from '@/lib/versions'
 import { getCharacterNames } from '@/lib/characters'
 import { exportMarkdown, exportPDF } from '@/lib/export'
 import { useEditorFont } from '@/hooks/useEditorFont'
@@ -28,6 +26,8 @@ interface Props {
   projectId: string
   initialDoc?: { id: string; content: string }
 }
+
+type SaveStatus = 'saved' | 'unsaved' | 'error'
 
 function extractScenes(doc: JSONContent): { text: string; index: number }[] {
   const items: { text: string; index: number }[] = []
@@ -45,16 +45,17 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   const [documentId, setDocumentId] = useState<string | null>(initialDoc?.id ?? null)
   const [documentTitle, setDocumentTitle] = useState('')
   const [scenes, setScenes] = useState<{ text: string; index: number }[]>([])
+  const [charCount, setCharCount] = useState(0)
   const [activeScene, setActiveScene] = useState<number>(-1)
   const [tocOpen, setTocOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [saveMsg, setSaveMsg] = useState('')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved')
+  const [isOffline, setIsOffline] = useState(false)
+  const [showNetworkWarning, setShowNetworkWarning] = useState(false)
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const charactersRef = useRef<string[]>([])
   const { font, changeFont, currentFamily } = useEditorFont()
 
-  // stable extensions created once; read charactersRef at call time
   const SpeechLineExt = useMemo(() => createSpeechLine(), [])
   const CharacterInputExt = useMemo(() => createCharacterInput(charactersRef), [])
 
@@ -73,8 +74,8 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         blockquote: false,
       }),
       SceneHeading,
-      CharacterCue,      // kept for backward compat with existing docs
-      Dialogue,          // kept for backward compat with existing docs
+      CharacterCue,
+      Dialogue,
       StageDirection,
       CharacterInputExt,
       SpeechLineExt,
@@ -96,6 +97,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
     immediatelyRender: false,
   })
 
+  // 초기 콘텐츠 로드
   useEffect(() => {
     if (!editor) return
     if (initialDoc) {
@@ -114,19 +116,50 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
     })()
   }, [editor, projectId])
 
+  // 캐릭터 목록
   useEffect(() => {
     getCharacterNames(projectId).then((names) => {
       charactersRef.current = names
     })
   }, [projectId])
 
+  // 온/오프라인 감지
+  useEffect(() => {
+    const handleOffline = () => {
+      setIsOffline(true)
+      setSaveStatus('error')
+      setShowNetworkWarning(true)
+    }
+    const handleOnline = () => {
+      setIsOffline(false)
+      setShowNetworkWarning(false)
+    }
+    window.addEventListener('offline', handleOffline)
+    window.addEventListener('online', handleOnline)
+    return () => {
+      window.removeEventListener('offline', handleOffline)
+      window.removeEventListener('online', handleOnline)
+    }
+  }, [])
+
   const handleUpdate = useCallback(() => {
     if (!editor || !documentId) return
-    setScenes(extractScenes(editor.getJSON()))
+
+    const json = editor.getJSON()
+    setScenes(extractScenes(json))
+    setCharCount(editor.state.doc.textContent.length)
+    setSaveStatus('unsaved')
+
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
-      const content = JSON.stringify(editor.getJSON())
-      await updateDocument(documentId, content)
+      try {
+        const content = JSON.stringify(json)
+        await updateDocument(documentId, content)
+        setSaveStatus('saved')
+      } catch {
+        setSaveStatus('error')
+        if (!navigator.onLine) setShowNetworkWarning(true)
+      }
     }, 500)
   }, [editor, documentId])
 
@@ -135,20 +168,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
     editor.on('update', handleUpdate)
     return () => { editor.off('update', handleUpdate) }
   }, [editor, handleUpdate])
-
-  async function handleSaveVersion() {
-    if (!editor || !documentId) return
-    setSaving(true)
-    try {
-      const content = JSON.stringify(editor.getJSON())
-      await updateDocument(documentId, content)
-      await saveVersion(documentId, content)
-      setSaveMsg('저장됨')
-      setTimeout(() => setSaveMsg(''), 2000)
-    } finally {
-      setSaving(false)
-    }
-  }
 
   function handleRestore(content: string) {
     if (!editor) return
@@ -181,24 +200,6 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
 
         <FontSelector value={font} onChange={changeFont} />
-
-        <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
-
-        <button
-          onClick={handleSaveVersion}
-          disabled={saving || !documentId}
-          className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
-          title={saving ? '저장 중...' : saveMsg || '버전 저장'}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 2v7M5 6l3 3 3-3"/>
-            <path d="M2.5 11.5v1A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5v-1"/>
-          </svg>
-        </button>
-
-        {documentId && (
-          <VersionPanel contentId={documentId} contentType="document" onRestore={handleRestore} />
-        )}
 
         <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
 
@@ -279,6 +280,36 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
           </div>
         </aside>
       </div>
+
+      {/* 하단 통계바 */}
+      <div className="no-print border-t border-neutral-100 dark:border-neutral-800 px-4 sm:px-8 py-1.5 flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
+        <span
+          title={saveStatus === 'saved' ? '저장됨' : saveStatus === 'error' ? '저장 실패' : '저장 중...'}
+          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
+            saveStatus === 'saved' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        />
+        <span className="text-neutral-200 dark:text-neutral-700">|</span>
+        <span>씬 {scenes.length}</span>
+        <span className="text-neutral-200 dark:text-neutral-700">|</span>
+        <span>글자 {charCount.toLocaleString()}</span>
+      </div>
+
+      {/* 네트워크 불안정 팝업 */}
+      {showNetworkWarning && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-neutral-800 border border-red-200 dark:border-red-900 rounded-xl shadow-xl px-4 py-3 text-sm max-w-sm w-full mx-4">
+          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-pulse" />
+          <span className="text-neutral-700 dark:text-neutral-200 flex-1">
+            네트워크 연결이 불안정합니다. 내용이 저장되지 않을 수 있습니다.
+          </span>
+          <button
+            onClick={() => setShowNetworkWarning(false)}
+            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 text-lg leading-none flex-shrink-0"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }

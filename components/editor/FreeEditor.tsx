@@ -6,10 +6,8 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { useEffect, useRef, useState, useCallback } from 'react'
 
 import ShareButton from '@/components/share/ShareButton'
-import VersionPanel from './VersionPanel'
 import FontSelector from './FontSelector'
 import DictionaryPanel from './DictionaryPanel'
-import { saveVersion, saveJottingVersion } from '@/lib/versions'
 import { useEditorFont } from '@/hooks/useEditorFont'
 
 interface Props {
@@ -19,13 +17,15 @@ interface Props {
   contentType: 'document' | 'jotting'
 }
 
+type SaveStatus = 'saved' | 'unsaved' | 'error'
+
 function tryParse(s: string) {
   try { return JSON.parse(s) } catch { return s || '' }
 }
 
 export default function FreeEditor({ content, onSave, documentId, contentType }: Props) {
-  const [saving, setSaving] = useState(false)
-  const [saveMsg, setSaveMsg] = useState('')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved')
+  const [charCount, setCharCount] = useState(0)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { font, changeFont, currentFamily } = useEditorFont()
 
@@ -49,9 +49,16 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
 
   const handleUpdate = useCallback(() => {
     if (!editor) return
+    setSaveStatus('unsaved')
+    setCharCount(editor.state.doc.textContent.length)
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
-      await onSave(JSON.stringify(editor.getJSON()))
+      try {
+        await onSave(JSON.stringify(editor.getJSON()))
+        setSaveStatus('saved')
+      } catch {
+        setSaveStatus('error')
+      }
     }, 500)
   }, [editor, onSave])
 
@@ -61,24 +68,6 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
     return () => { editor.off('update', handleUpdate) }
   }, [editor, handleUpdate])
 
-  async function handleSaveVersion() {
-    if (!editor) return
-    setSaving(true)
-    try {
-      const c = JSON.stringify(editor.getJSON())
-      await onSave(c)
-      if (contentType === 'jotting') {
-        await saveJottingVersion(documentId, c)
-      } else {
-        await saveVersion(documentId, c)
-      }
-      setSaveMsg('저장됨')
-      setTimeout(() => setSaveMsg(''), 2000)
-    } finally {
-      setSaving(false)
-    }
-  }
-
   function handleRestore(c: string) {
     if (!editor) return
     try { editor.commands.setContent(JSON.parse(c)) }
@@ -87,6 +76,7 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
 
   return (
     <div className="flex flex-col h-full">
+      {/* 툴바 */}
       <div className="border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         <ToolBtn
           active={editor?.isActive('bold')}
@@ -128,31 +118,27 @@ export default function FreeEditor({ content, onSave, documentId, contentType }:
 
         <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
 
-        <button
-          onClick={handleSaveVersion}
-          disabled={saving}
-          className="p-2 rounded text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
-          title={saving ? '저장 중...' : saveMsg || '버전 저장'}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 2v7M5 6l3 3 3-3"/>
-            <path d="M2.5 11.5v1A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5v-1"/>
-          </svg>
-        </button>
-
-        <VersionPanel contentId={documentId} contentType={contentType} onRestore={handleRestore} />
-
-        <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
-
         <ShareButton contentId={documentId} contentType={contentType} />
 
         <DictionaryPanel />
       </div>
 
+      {/* 에디터 본문 */}
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl px-4 sm:px-8 py-8 sm:py-12" style={{ fontFamily: currentFamily }}>
           <EditorContent editor={editor} className="tiptap" />
         </div>
+      </div>
+
+      {/* 하단 상태바 */}
+      <div className="border-t border-neutral-100 dark:border-neutral-800 px-4 sm:px-8 py-1.5 flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
+        <span
+          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
+            saveStatus === 'saved' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        />
+        <span className="text-neutral-300 dark:text-neutral-600">|</span>
+        <span>글자 {charCount.toLocaleString()}</span>
       </div>
     </div>
   )
