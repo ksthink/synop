@@ -235,12 +235,33 @@ body {
 @media print {
   .no-print { display: none !important; }
 
+  /* 레이아웃 컨테이너의 overflow 제약 해제 */
+  body, html {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
   body {
     font-family: "Batang", "바탕", Georgia, serif;
     font-size: 11pt;
     line-height: 1.6;
     color: #000 !important;
     background: #fff !important;
+  }
+
+  /* flex 컨테이너 overflow 해제 */
+  main,
+  [class*="flex-1"],
+  [class*="overflow-hidden"],
+  [class*="overflow-y-auto"] {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* 에디터 본문 전체 너비로 */
+  .tiptap {
+    max-width: 100% !important;
   }
 
   @page {
@@ -258,5 +279,6 @@ body {
   .tiptap .dialogue,
   .tiptap .stage-direction {
     color: #000 !important;
+    border-color: #ccc !important;
   }
 }

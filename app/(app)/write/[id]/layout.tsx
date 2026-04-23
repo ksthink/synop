@@ -19,7 +19,7 @@ export default async function ProjectLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900">
-      <header className="border-b border-neutral-200 dark:border-neutral-800 px-6 py-3 flex items-center gap-4">
+      <header className="no-print border-b border-neutral-200 dark:border-neutral-800 px-6 py-3 flex items-center gap-4">
         <Link
           href="/write/projects"
           className="text-sm text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"

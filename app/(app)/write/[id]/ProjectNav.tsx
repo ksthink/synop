@@ -14,7 +14,7 @@ export default function ProjectNav({ projectId }: { projectId: string }) {
   const pathname = usePathname()
 
   return (
-    <nav className="border-b border-neutral-200 dark:border-neutral-800 px-6 flex gap-1">
+    <nav className="no-print border-b border-neutral-200 dark:border-neutral-800 px-6 flex gap-1">
       {NAV_ITEMS.map((item) => {
         const href = `/write/${projectId}/${item.key}`
         const active = pathname.endsWith(`/${item.key}`)
