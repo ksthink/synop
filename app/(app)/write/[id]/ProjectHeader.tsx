@@ -4,22 +4,40 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ThemeToggle'
 
+const SECTION_LABELS: Record<string, string> = {
+  intention:  '기획의도',
+  characters: '등장인물',
+  synopsis:   '시놉시스',
+  scenario:   '시나리오',
+}
+
 export default function ProjectHeader({ projectId, title }: { projectId: string; title: string }) {
   const pathname = usePathname()
-  const isHub = pathname === `/write/${projectId}`
-  const backHref = isHub ? '/write/projects' : `/write/${projectId}`
+  const segment = pathname.split('/').pop() ?? ''
+  const sectionLabel = SECTION_LABELS[segment]
+  const isHub = !sectionLabel
 
   return (
     <header className="no-print border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4">
       <Link
-        href={backHref}
+        href={isHub ? '/write/projects' : `/write/${projectId}`}
         className="flex-shrink-0 text-sm text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
       >
         ←
       </Link>
-      <span className="font-medium text-neutral-800 dark:text-neutral-100 truncate flex-1 min-w-0">
-        {title}
-      </span>
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <span className={`font-medium truncate ${sectionLabel ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
+          {title}
+        </span>
+        {sectionLabel && (
+          <>
+            <span className="text-neutral-300 dark:text-neutral-600 flex-shrink-0">|</span>
+            <span className="font-medium text-neutral-800 dark:text-neutral-100 flex-shrink-0">
+              {sectionLabel}
+            </span>
+          </>
+        )}
+      </div>
       <div className="ml-auto">
         <ThemeToggle />
       </div>
