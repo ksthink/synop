@@ -54,6 +54,9 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const charactersRef = useRef<string[]>([])
+  const exportBtnRef = useRef<HTMLButtonElement>(null)
+  const [exportOpen, setExportOpen] = useState(false)
+  const [exportPos, setExportPos] = useState({ top: 0, left: 0 })
   const { font, changeFont, currentFamily } = useEditorFont()
 
   const SpeechLineExt = useMemo(() => createSpeechLine(), [])
@@ -123,6 +126,14 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
     })
   }, [projectId])
 
+  // 내보내기 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    if (!exportOpen) return
+    const close = () => setExportOpen(false)
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [exportOpen])
+
   // 온/오프라인 감지
   useEffect(() => {
     const handleOffline = () => {
@@ -188,48 +199,50 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* 툴바 */}
-      <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
-        <button
-          onClick={() => editor?.chain().focus().insertContent({ type: 'sceneHeading', content: [] }).run()}
-          className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
-          title="씬 추가 (#)"
-        >
-          + 씬
-        </button>
+      <div className="no-print border-b border-neutral-200 dark:border-neutral-800 px-2 sm:px-4 py-2 flex items-center gap-1 flex-shrink-0">
+        {/* 좌측 — 스크롤 가능 */}
+        <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <button
+            onClick={() => editor?.chain().focus().insertContent({ type: 'sceneHeading', content: [] }).run()}
+            className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors flex-shrink-0"
+          >
+            + 씬
+          </button>
 
-        <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
 
-        <FontSelector value={font} onChange={changeFont} />
+          <FontSelector value={font} onChange={changeFont} />
 
-        <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
 
-        {documentId && (
-          <ShareButton contentId={documentId} contentType="document" />
-        )}
+          {documentId && (
+            <ShareButton contentId={documentId} contentType="document" />
+          )}
 
-        <DictionaryPanel />
+          <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1 flex-shrink-0" />
 
-        <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+          {/* 내보내기 드롭다운 */}
+          <div className="relative flex-shrink-0">
+            <button
+              ref={exportBtnRef}
+              onClick={() => {
+                if (!exportOpen && exportBtnRef.current) {
+                  const r = exportBtnRef.current.getBoundingClientRect()
+                  setExportPos({ top: r.bottom + 4, left: r.left })
+                }
+                setExportOpen((v) => !v)
+              }}
+              className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+            >
+              내보내기
+            </button>
+          </div>
+        </div>
 
-        <button
-          onClick={() => editor && exportMarkdown(editor, documentTitle || undefined)}
-          disabled={!editor}
-          className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors disabled:opacity-40"
-          title="마크다운으로 내보내기"
-        >
-          MD
-        </button>
-        <button
-          onClick={exportPDF}
-          className="px-3 py-1.5 rounded text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
-          title="PDF 인쇄"
-        >
-          PDF
-        </button>
-
-        {scenes.length > 0 && (
-          <>
-            <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+        {/* 우측 — 고정 */}
+        <div className="flex items-center gap-1 flex-shrink-0 pl-2 border-l border-neutral-200 dark:border-neutral-700">
+          <DictionaryPanel />
+          {scenes.length > 0 && (
             <button
               onClick={() => setTocOpen((v) => !v)}
               className={`hidden xl:block px-3 py-1.5 rounded text-sm transition-colors ${
@@ -240,9 +253,32 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
             >
               목차
             </button>
-          </>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* 내보내기 드롭다운 패널 */}
+      {exportOpen && (
+        <div
+          className="fixed z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-32"
+          style={{ top: exportPos.top, left: exportPos.left }}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <button
+            onClick={() => { editor && exportMarkdown(editor, documentTitle || undefined); setExportOpen(false) }}
+            disabled={!editor}
+            className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40"
+          >
+            마크다운
+          </button>
+          <button
+            onClick={() => { exportPDF(); setExportOpen(false) }}
+            className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          >
+            PDF
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-hidden">
         {/* 에디터 본문 */}
