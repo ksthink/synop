@@ -44,7 +44,7 @@ export default function ScenarioEditor({ projectId }: Props) {
   const [characters, setCharacters] = useState<string[]>([])
   const [scenes, setScenes] = useState<{ text: string; index: number }[]>([])
   const [activeScene, setActiveScene] = useState<number>(-1)
-  const [tocOpen, setTocOpen] = useState(true)
+  const [tocOpen, setTocOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
 
@@ -241,6 +241,23 @@ export default function ScenarioEditor({ projectId }: Props) {
         >
           PDF
         </button>
+
+        {scenes.length > 0 && (
+          <>
+            <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-1" />
+            <button
+              onClick={() => setTocOpen((v) => !v)}
+              className={`hidden xl:block px-3 py-1.5 rounded text-sm transition-colors ${
+                tocOpen
+                  ? 'text-neutral-800 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-neutral-200'
+              }`}
+              title="목차 토글"
+            >
+              목차
+            </button>
+          </>
+        )}
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -252,38 +269,32 @@ export default function ScenarioEditor({ projectId }: Props) {
         </div>
 
         {/* TOC 패널 */}
-        {scenes.length > 0 && (
-          <aside className="no-print hidden xl:flex flex-col w-48 border-l border-neutral-100 dark:border-neutral-800 flex-shrink-0">
-            <div className="flex items-center justify-between px-4 py-3">
+        <aside
+          className="no-print hidden xl:flex flex-col border-l border-neutral-100 dark:border-neutral-800 flex-shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out"
+          style={{ width: tocOpen ? '12rem' : '0' }}
+        >
+          <div className="w-48 flex flex-col flex-1 min-h-0">
+            <div className="px-4 py-3 flex-shrink-0">
               <p className="text-[10px] tracking-widest text-neutral-400 dark:text-neutral-500 uppercase">목차</p>
-              <button
-                onClick={() => setTocOpen((v) => !v)}
-                className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 text-xs transition-colors"
-                title={tocOpen ? '목차 접기' : '목차 펼치기'}
-              >
-                {tocOpen ? '−' : '+'}
-              </button>
             </div>
-            {tocOpen && (
-              <nav className="flex-1 overflow-y-auto pb-6 px-4 flex flex-col gap-0.5">
-                {scenes.map((s) => (
-                  <button
-                    key={s.index}
-                    onClick={() => scrollToScene(s.index)}
-                    className={`text-left px-1 py-1 rounded text-xs transition-colors ${
-                      activeScene === s.index
-                        ? 'text-neutral-800 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800'
-                        : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] mr-1 opacity-60">S#{s.index + 1}</span>
-                    <span className="truncate block">{s.text}</span>
-                  </button>
-                ))}
-              </nav>
-            )}
-          </aside>
-        )}
+            <nav className="flex-1 overflow-y-auto pb-6 px-4 flex flex-col gap-0.5">
+              {scenes.map((s) => (
+                <button
+                  key={s.index}
+                  onClick={() => scrollToScene(s.index)}
+                  className={`text-left px-1 py-1 rounded text-xs transition-colors ${
+                    activeScene === s.index
+                      ? 'text-neutral-800 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800'
+                      : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                  }`}
+                >
+                  <span className="font-mono text-[10px] mr-1 opacity-60">S#{s.index + 1}</span>
+                  <span className="truncate block">{s.text}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </aside>
       </div>
 
       {/* 캐릭터 자동완성 드롭다운 */}
