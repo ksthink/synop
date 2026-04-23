@@ -7,9 +7,10 @@ import { updateDocument } from '@/lib/documents'
 interface Props {
   documentId: string
   initialContent: string
+  title?: string
 }
 
-export default function DocumentEditor({ documentId, initialContent }: Props) {
+export default function DocumentEditor({ documentId, initialContent, title }: Props) {
   const handleSave = useCallback(async (content: string) => {
     await updateDocument(documentId, content)
   }, [documentId])
@@ -20,6 +21,7 @@ export default function DocumentEditor({ documentId, initialContent }: Props) {
       onSave={handleSave}
       documentId={documentId}
       contentType="document"
+      title={title}
     />
   )
 }
