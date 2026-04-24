@@ -1,7 +1,26 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getProjects, type Project } from '@/lib/projects'
-import ProjectList from './ProjectList'
+import { getScenarioDocs } from '@/lib/documents'
+import ProjectList, { type ProjectStats } from './ProjectList'
+
+function parseStats(content: string): { sceneCount: number; charCount: number } {
+  try {
+    const json = JSON.parse(content)
+    let sceneCount = 0
+    let charCount = 0
+    function walk(node: { type?: string; text?: string; content?: typeof node[] }) {
+      if (!node) return
+      if (node.type === 'sceneHeading') sceneCount++
+      if (node.type === 'text') charCount += (node.text ?? '').length
+      for (const child of node.content ?? []) walk(child)
+    }
+    walk(json)
+    return { sceneCount, charCount }
+  } catch {
+    return { sceneCount: 0, charCount: 0 }
+  }
+}
 
 export default async function ProjectsPage() {
   const supabase = await createClient()
@@ -14,6 +33,22 @@ export default async function ProjectsPage() {
     projects = await getProjects(user.id, supabase)
   } catch {
     fetchError = '목록을 불러오는 데 실패했습니다.'
+  }
+
+  const statsMap: Record<string, ProjectStats> = {}
+  if (projects.length > 0) {
+    try {
+      const docs = await getScenarioDocs(projects.map((p) => p.id), supabase)
+      for (const doc of docs) {
+        const { sceneCount, charCount } = parseStats(doc.content)
+        statsMap[doc.projectId] = {
+          documentCreatedAt: doc.createdAt,
+          documentUpdatedAt: doc.updatedAt,
+          sceneCount,
+          charCount,
+        }
+      }
+    } catch {}
   }
 
   return (
@@ -40,7 +75,7 @@ export default async function ProjectsPage() {
         {fetchError ? (
           <p className="text-sm text-red-500">{fetchError}</p>
         ) : (
-          <ProjectList projects={projects} />
+          <ProjectList projects={projects} statsMap={statsMap} />
         )}
       </div>
     </div>

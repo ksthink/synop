@@ -80,3 +80,17 @@ export async function updateDocument(
     .eq('id', id)
   if (error) throw error
 }
+
+export async function getScenarioDocs(
+  projectIds: string[],
+  supabase?: SupabaseClient
+): Promise<Document[]> {
+  if (projectIds.length === 0) return []
+  const { data, error } = await client(supabase)
+    .from('documents')
+    .select('*')
+    .in('project_id', projectIds)
+    .eq('type', 'scenario')
+  if (error) throw error
+  return (data as DocumentRow[]).map(toDocument)
+}
