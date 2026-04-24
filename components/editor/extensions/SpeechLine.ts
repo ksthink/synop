@@ -30,8 +30,14 @@ export function createSpeechLine() {
 
     addKeyboardShortcuts() {
       return {
-        // Enter → new paragraph
+        // Enter → hard break (stay in dialogue column)
         Enter: () => {
+          const { $from } = this.editor.state.selection
+          if ($from.parent.type.name !== 'speechLine') return false
+          return this.editor.commands.setHardBreak()
+        },
+        // Ctrl+Enter → exit speechLine, new paragraph
+        'Ctrl-Enter': () => {
           const { $from } = this.editor.state.selection
           if ($from.parent.type.name !== 'speechLine') return false
           const end = $from.after()

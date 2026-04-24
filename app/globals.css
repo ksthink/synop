@@ -141,6 +141,20 @@ body {
   margin: 1.2em 0 0;
 }
 
+.tiptap .speech-name-label {
+  display: inline-block;
+  min-width: 7em;
+  flex-shrink: 0;
+  font-weight: 700;
+  color: #4a4a4a;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.dark .tiptap .speech-name-label {
+  color: #a3a3a3;
+}
+
 .tiptap .speech-name-area {
   display: inline-flex;
   align-items: baseline;

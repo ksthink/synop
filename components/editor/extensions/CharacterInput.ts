@@ -1,6 +1,6 @@
 import { Node, InputRule } from '@tiptap/core'
 import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state'
-import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import { Decoration, DecorationSet, EditorView } from '@tiptap/pm/view'
 
 const ghostKey = new PluginKey('characterInputGhost')
 
@@ -44,25 +44,7 @@ export function createCharacterInput(charactersRef: { current: string[] }) {
         Enter: () => {
           const { $from } = this.editor.state.selection
           if ($from.parent.type.name !== 'characterInput') return false
-
-          const typed = $from.parent.textContent
-          const ghost = getGhost(typed, charactersRef.current)
-          const character = ghost ? typed + ghost : typed
-
-          const { state, view } = this.editor
-          const pos = $from.before()
-          const speechLineType = state.schema.nodes.speechLine
-          if (!speechLineType) return false
-
-          const newNode = speechLineType.create({ character })
-          const tr = state.tr
-            .replaceWith(pos, $from.after(), newNode)
-            .setSelection(TextSelection.create(state.tr.doc, pos + 1))
-
-          // Re-resolve because replaceWith changes doc
-          const newDoc = tr.doc
-          tr.setSelection(TextSelection.create(newDoc, pos + 1))
-          view.dispatch(tr)
+          convertToSpeechLine(this.editor.view, charactersRef)
           return true
         },
 
@@ -135,11 +117,41 @@ export function createCharacterInput(charactersRef: { current: string[] }) {
             decorations(state) {
               return this.getState(state)
             },
+            handleDOMEvents: {
+              keydown(view: EditorView, event: Event) {
+                const ke = event as KeyboardEvent
+                if (ke.key !== 'Enter' || !ke.isComposing) return false
+                // IME composition: schedule conversion after IME commits
+                setTimeout(() => {
+                  convertToSpeechLine(view, charactersRef)
+                }, 0)
+                return false
+              },
+            },
           },
         }),
       ]
     },
   })
+}
+
+function convertToSpeechLine(view: EditorView, charactersRef: { current: string[] }) {
+  const { state } = view
+  const { $from } = state.selection
+  if ($from.parent.type.name !== 'characterInput') return
+
+  const typed = $from.parent.textContent
+  const ghost = getGhost(typed, charactersRef.current)
+  const character = ghost ? typed + ghost : typed
+
+  const pos = $from.before()
+  const speechLineType = state.schema.nodes.speechLine
+  if (!speechLineType) return
+
+  const newNode = speechLineType.create({ character })
+  const tr = state.tr.replaceWith(pos, $from.after(), newNode)
+  tr.setSelection(TextSelection.create(tr.doc, pos + 1))
+  view.dispatch(tr)
 }
 
 function getGhost(typed: string, characters: string[]): string {

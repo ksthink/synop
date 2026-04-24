@@ -126,6 +126,22 @@ function ScenarioView({ doc }: { doc: JSONContent }) {
                 {text}
               </p>
             )
+          case 'speechLine': {
+            const character = node.attrs?.character ?? ''
+            const dialogueNodes = node.content ?? []
+            const dialogue = dialogueNodes.map((n, j) => {
+              if (n.type === 'hardBreak') return <br key={j} />
+              return <span key={j}>{n.text ?? ''}</span>
+            })
+            return (
+              <div key={i} className="speech-line" style={{ display: 'flex', gap: '1.5em', margin: '1.2em 0 0' }}>
+                <span style={{ minWidth: '7em', flexShrink: 0, fontWeight: 700, color: '#4a4a4a', letterSpacing: '0.04em' }}>
+                  {character}
+                </span>
+                <span style={{ flex: 1 }}>{dialogue}</span>
+              </div>
+            )
+          }
           default:
             return text ? (
               <p key={i} className="mb-3 text-neutral-800 dark:text-neutral-200">
