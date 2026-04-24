@@ -13,8 +13,9 @@ export interface ProjectStats {
 
 function fmt(dateStr: string | null | undefined) {
   if (!dateStr) return null
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
+  return new Date(dateStr).toLocaleString('ko-KR', {
     year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
   })
 }
 
