@@ -106,11 +106,12 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   // 초기 콘텐츠 로드
   useEffect(() => {
     if (!editor) return
+    const ed = editor
 
-    function applyContent(json: ReturnType<typeof editor.getJSON>) {
-      editor.commands.setContent(json)
+    function applyContent(json: ReturnType<typeof ed.getJSON>) {
+      ed.commands.setContent(json)
       setScenes(extractScenes(json))
-      setCharCount(editor.state.doc.textContent.length)
+      setCharCount(ed.state.doc.textContent.length)
     }
 
     if (initialDoc) {
