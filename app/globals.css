@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Mulmaru';
+  src: url('/fonts/Mulmaru.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IyagiGGC';
+  src: url('/fonts/IyagiGGC.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubBatang';
+  src: url('/fonts/KoPubBatang.woff2') format('woff2');
+  font-display: swap;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer components {
@@ -23,13 +41,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-mulmaru), var(--font-nanum-gothic), sans-serif;
+  --font-sans: 'Mulmaru', var(--font-nanum-gothic), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mulmaru), var(--font-nanum-gothic), "Nanum Gothic", sans-serif;
+  font-family: 'Mulmaru', var(--font-nanum-gothic), "Nanum Gothic", sans-serif;
 }
 
 /* ─── Editor base ─── */
