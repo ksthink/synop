@@ -90,11 +90,11 @@ body {
   font-weight: 700;
   letter-spacing: 0.06em;
   margin: 1.5em 0 0;
-  color: #1a1a1a;
+  color: #4a4a4a;
 }
 
 .dark .tiptap .character-cue {
-  color: #e5e5e5;
+  color: #a3a3a3;
 }
 
 .tiptap .character-cue.is-empty::after {
@@ -121,11 +121,11 @@ body {
   font-weight: 700;
   letter-spacing: 0.04em;
   margin: 1.2em 0 0;
-  color: #1a1a1a;
+  color: #4a4a4a;
 }
 
 .dark .tiptap .speech-name-input-block {
-  color: #e5e5e5;
+  color: #a3a3a3;
 }
 
 .tiptap .speech-name-input-block.is-empty::before {
@@ -150,7 +150,7 @@ body {
 
 .tiptap .speech-name-input {
   font-weight: 700;
-  color: #1a1a1a;
+  color: #4a4a4a;
   outline: none;
   min-width: 1px;
   white-space: nowrap;
@@ -159,7 +159,7 @@ body {
 }
 
 .dark .tiptap .speech-name-input {
-  color: #e5e5e5;
+  color: #a3a3a3;
 }
 
 .tiptap .speech-name-ghost {
@@ -194,6 +194,14 @@ body {
 
 .dark .tiptap .stage-direction {
   color: #9ca3af;
+}
+
+.tiptap .stage-direction:not(.is-empty)::before {
+  content: '(';
+}
+
+.tiptap .stage-direction:not(.is-empty)::after {
+  content: ')';
 }
 
 /* ─── Free editor headings & lists ─── */
@@ -252,6 +260,11 @@ body {
   text-align: left;
   font-weight: 700;
   margin: 1.2em 0 0;
+  color: #4a4a4a;
+}
+
+.dark .scenario-viewer .character-cue {
+  color: #a3a3a3;
 }
 
 .scenario-viewer .dialogue {
@@ -271,6 +284,14 @@ body {
 
 .dark .scenario-viewer .stage-direction {
   color: #9ca3af;
+}
+
+.scenario-viewer .stage-direction::before {
+  content: '(';
+}
+
+.scenario-viewer .stage-direction::after {
+  content: ')';
 }
 
 /* ─── Blockquote (인용) ─── */
