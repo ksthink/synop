@@ -106,9 +106,16 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   // 초기 콘텐츠 로드
   useEffect(() => {
     if (!editor) return
+
+    function applyContent(json: ReturnType<typeof editor.getJSON>) {
+      editor.commands.setContent(json)
+      setScenes(extractScenes(json))
+      setCharCount(editor.state.doc.textContent.length)
+    }
+
     if (initialDoc) {
       if (initialDoc.content) {
-        try { editor.commands.setContent(JSON.parse(initialDoc.content)) } catch {}
+        try { applyContent(JSON.parse(initialDoc.content)) } catch {}
       }
       return
     }
@@ -117,7 +124,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
       if (!doc) doc = await upsertDocument(projectId, 'scenario', '')
       setDocumentId(doc.id)
       if (doc.content) {
-        try { editor.commands.setContent(JSON.parse(doc.content)) } catch {}
+        try { applyContent(JSON.parse(doc.content)) } catch {}
       }
     })()
   }, [editor, projectId])
