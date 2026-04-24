@@ -60,29 +60,34 @@ export default function ProjectList({
             className="flex items-start justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 sm:px-5 py-3 sm:py-4 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
           >
             <Link href={`/write/${project.id}`} className="flex-1 min-w-0">
-              <p className="font-medium text-neutral-800 dark:text-neutral-100 truncate">
-                {project.title}
-              </p>
-
-              {project.author && (
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-0.5">
-                  {project.author}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5">
-                {stats ? (
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="font-medium text-neutral-800 dark:text-neutral-100">
+                  {project.title}
+                </span>
+                {project.author && (
+                  <Sep />
+                )}
+                {project.author && (
+                  <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.author}</span>
+                )}
+                {stats && (
                   <>
+                    <Sep />
                     <Chip>씬 {stats.sceneCount}</Chip>
+                    <Sep />
                     <Chip>{stats.charCount.toLocaleString()}자</Chip>
-                    {stats.documentCreatedAt && (
-                      <Chip>생성 {fmt(stats.documentCreatedAt)}</Chip>
-                    )}
-                    {stats.documentUpdatedAt && (
-                      <Chip>수정 {fmt(stats.documentUpdatedAt)}</Chip>
-                    )}
                   </>
-                ) : (
+                )}
+              </div>
+
+              <div className="mt-1 flex flex-col gap-0">
+                {stats?.documentCreatedAt && (
+                  <Chip>생성 {fmt(stats.documentCreatedAt)}</Chip>
+                )}
+                {stats?.documentUpdatedAt && (
+                  <Chip>수정 {fmt(stats.documentUpdatedAt)}</Chip>
+                )}
+                {!stats && (
                   <Chip>수정 {fmt(project.updatedAt)}</Chip>
                 )}
               </div>
@@ -108,4 +113,8 @@ function Chip({ children }: { children: React.ReactNode }) {
       {children}
     </span>
   )
+}
+
+function Sep() {
+  return <span className="text-xs text-neutral-200 dark:text-neutral-700">|</span>
 }
