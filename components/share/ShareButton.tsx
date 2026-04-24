@@ -96,7 +96,7 @@ export default function ShareButton({ contentId, contentType }: Props) {
         <div
           className="fixed z-50 w-72 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg p-4"
           style={{ top: panelPos.top, right: panelPos.right }}
-          onMouseDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.nativeEvent.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">공유 링크</span>

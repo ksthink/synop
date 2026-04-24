@@ -264,7 +264,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
         <div
           className="fixed z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-32"
           style={{ top: exportPos.top, left: exportPos.left }}
-          onMouseDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.nativeEvent.stopPropagation()}
         >
           <button
             onClick={() => { editor && exportMarkdown(editor, documentTitle || undefined); setExportOpen(false) }}
