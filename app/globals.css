@@ -1,6 +1,3 @@
-@import url("https://font.ksthink.com/f/iyagiggc.css");
-@import url("https://font.ksthink.com/f/mulmaru.css");
-@import url("https://font.ksthink.com/f/kopub-dotum-medium.css");
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -26,13 +23,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Mulmaru', var(--font-nanum-gothic), sans-serif;
+  --font-sans: var(--font-mulmaru), var(--font-nanum-gothic), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Mulmaru', var(--font-nanum-gothic), "Nanum Gothic", sans-serif;
+  font-family: var(--font-mulmaru), var(--font-nanum-gothic), "Nanum Gothic", sans-serif;
 }
 
 /* ─── Editor base ─── */
