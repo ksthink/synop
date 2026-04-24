@@ -1,4 +1,6 @@
 import { Node } from '@tiptap/core'
+import type { Editor } from '@tiptap/core'
+import type { Node as PmNode } from '@tiptap/pm/model'
 
 export function createSpeechLine() {
   return Node.create({
@@ -58,18 +60,53 @@ export function createSpeechLine() {
     },
 
     addNodeView() {
-      return ({ node }) => {
+      return ({
+        node,
+        editor,
+        getPos,
+      }: {
+        node: PmNode
+        editor: Editor
+        getPos: () => number | undefined
+      }) => {
+        let currentCharacter = node.attrs.character as string
+
         const dom = document.createElement('div')
         dom.className = 'speech-line'
 
         const nameLabel = document.createElement('span')
         nameLabel.className = 'speech-name-label'
-        nameLabel.contentEditable = 'false'
-        nameLabel.textContent = node.attrs.character || ''
+        nameLabel.contentEditable = 'true'
+        nameLabel.spellcheck = false
+        nameLabel.textContent = currentCharacter
 
         const dialogueArea = document.createElement('span')
         dialogueArea.className = 'speech-dialogue-area'
         if (node.content.size === 0) dialogueArea.classList.add('is-empty')
+
+        nameLabel.addEventListener('keydown', (e: KeyboardEvent) => {
+          e.stopPropagation() // prevent ProseMirror from handling these keystrokes
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            nameLabel.blur()
+            // move ProseMirror focus to dialogue area
+            editor.commands.focus()
+          } else if (e.key === 'Escape') {
+            nameLabel.textContent = currentCharacter
+            nameLabel.blur()
+            editor.commands.focus()
+          }
+        })
+
+        nameLabel.addEventListener('blur', () => {
+          const newName = (nameLabel.textContent ?? '').trim()
+          if (newName === currentCharacter) return
+          const pos = getPos()
+          if (pos === undefined) return
+          editor.view.dispatch(
+            editor.view.state.tr.setNodeMarkup(pos, undefined, { character: newName })
+          )
+        })
 
         dom.appendChild(nameLabel)
         dom.appendChild(dialogueArea)
@@ -77,9 +114,13 @@ export function createSpeechLine() {
         return {
           dom,
           contentDOM: dialogueArea,
-          update(updated) {
+          update(updated: PmNode) {
             if (updated.type.name !== 'speechLine') return false
-            nameLabel.textContent = updated.attrs.character || ''
+            currentCharacter = updated.attrs.character as string
+            // only update DOM if not currently focused (avoid cursor jumping)
+            if (document.activeElement !== nameLabel) {
+              nameLabel.textContent = currentCharacter
+            }
             if (updated.content.size === 0) {
               dialogueArea.classList.add('is-empty')
             } else {

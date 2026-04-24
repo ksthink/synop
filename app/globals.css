@@ -163,11 +163,23 @@ body {
   font-weight: 700;
   color: #4a4a4a;
   letter-spacing: 0.04em;
-  user-select: none;
+  cursor: text;
+  outline: none;
+  white-space: nowrap;
+}
+
+.tiptap .speech-name-label:focus {
+  color: #1a1a1a;
+  border-bottom: 1px solid #d1d5db;
 }
 
 .dark .tiptap .speech-name-label {
   color: #a3a3a3;
+}
+
+.dark .tiptap .speech-name-label:focus {
+  color: #e5e5e5;
+  border-bottom-color: #4a4a4a;
 }
 
 .tiptap .speech-name-area {
