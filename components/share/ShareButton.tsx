@@ -20,6 +20,7 @@ export default function ShareButton({ contentId, contentType }: Props) {
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const [panelPos, setPanelPos] = useState({ top: 0, right: 0 })
 
   useEffect(() => {
@@ -29,7 +30,10 @@ export default function ShareButton({ contentId, contentType }: Props) {
 
   useEffect(() => {
     if (!open) return
-    const close = () => setOpen(false)
+    const close = (e: MouseEvent) => {
+      if (panelRef.current?.contains(e.target as Node)) return
+      setOpen(false)
+    }
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [open])
@@ -94,9 +98,9 @@ export default function ShareButton({ contentId, contentType }: Props) {
 
       {open && (
         <div
+          ref={panelRef}
           className="fixed z-50 w-72 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg p-4"
           style={{ top: panelPos.top, right: panelPos.right }}
-          onMouseDown={(e) => e.nativeEvent.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">공유 링크</span>

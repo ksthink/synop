@@ -55,6 +55,7 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const charactersRef = useRef<string[]>([])
   const exportBtnRef = useRef<HTMLButtonElement>(null)
+  const exportPanelRef = useRef<HTMLDivElement>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportPos, setExportPos] = useState({ top: 0, left: 0 })
   const [toolbarVisible, setToolbarVisible] = useState(true)
@@ -131,7 +132,10 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
   // 내보내기 드롭다운 외부 클릭 닫기
   useEffect(() => {
     if (!exportOpen) return
-    const close = () => setExportOpen(false)
+    const close = (e: MouseEvent) => {
+      if (exportPanelRef.current?.contains(e.target as Node)) return
+      setExportOpen(false)
+    }
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [exportOpen])
@@ -262,9 +266,9 @@ export default function ScenarioEditor({ projectId, initialDoc }: Props) {
       {/* 내보내기 드롭다운 패널 */}
       {exportOpen && (
         <div
+          ref={exportPanelRef}
           className="fixed z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-32"
           style={{ top: exportPos.top, left: exportPos.left }}
-          onMouseDown={(e) => e.nativeEvent.stopPropagation()}
         >
           <button
             onClick={() => { editor && exportMarkdown(editor, documentTitle || undefined); setExportOpen(false) }}

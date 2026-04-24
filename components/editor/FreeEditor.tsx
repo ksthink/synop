@@ -32,6 +32,7 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
   const { font, changeFont, currentFamily } = useEditorFont()
 
   const exportBtnRef = useRef<HTMLButtonElement>(null)
+  const exportPanelRef = useRef<HTMLDivElement>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportPos, setExportPos] = useState({ top: 0, left: 0 })
   const [toolbarVisible, setToolbarVisible] = useState(true)
@@ -78,7 +79,10 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
 
   useEffect(() => {
     if (!exportOpen) return
-    const close = () => setExportOpen(false)
+    const close = (e: MouseEvent) => {
+      if (exportPanelRef.current?.contains(e.target as Node)) return
+      setExportOpen(false)
+    }
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [exportOpen])
@@ -162,7 +166,7 @@ export default function FreeEditor({ content, onSave, documentId, contentType, t
         <div
           className="fixed z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-32"
           style={{ top: exportPos.top, left: exportPos.left }}
-          onMouseDown={(e) => e.nativeEvent.stopPropagation()}
+          ref={exportPanelRef}
         >
           <button
             onClick={() => { editor && exportMarkdown(editor, title); setExportOpen(false) }}
