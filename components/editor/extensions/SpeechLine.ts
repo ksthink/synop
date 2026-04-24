@@ -84,12 +84,16 @@ export function createSpeechLine() {
         dialogueArea.className = 'speech-dialogue-area'
         if (node.content.size === 0) dialogueArea.classList.add('is-empty')
 
+        // prevent ProseMirror from stealing focus on click
+        nameLabel.addEventListener('mousedown', (e: MouseEvent) => {
+          e.stopPropagation()
+        })
+
         nameLabel.addEventListener('keydown', (e: KeyboardEvent) => {
           e.stopPropagation() // prevent ProseMirror from handling these keystrokes
           if (e.key === 'Enter') {
             e.preventDefault()
             nameLabel.blur()
-            // move ProseMirror focus to dialogue area
             editor.commands.focus()
           } else if (e.key === 'Escape') {
             nameLabel.textContent = currentCharacter
@@ -114,10 +118,12 @@ export function createSpeechLine() {
         return {
           dom,
           contentDOM: dialogueArea,
+          ignoreMutation(mutation: { target: EventTarget | null }) {
+            return nameLabel.contains(mutation.target as unknown as Element)
+          },
           update(updated: PmNode) {
             if (updated.type.name !== 'speechLine') return false
             currentCharacter = updated.attrs.character as string
-            // only update DOM if not currently focused (avoid cursor jumping)
             if (document.activeElement !== nameLabel) {
               nameLabel.textContent = currentCharacter
             }
