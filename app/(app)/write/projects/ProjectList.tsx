@@ -13,10 +13,13 @@ export interface ProjectStats {
 
 function fmt(dateStr: string | null | undefined) {
   if (!dateStr) return null
-  return new Date(dateStr).toLocaleString('ko-KR', {
-    year: 'numeric', month: 'long', day: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+  const d = new Date(dateStr)
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return `${yyyy}/${mm}/${dd} ${hh}:${min}`
 }
 
 export default function ProjectList({
@@ -65,32 +68,21 @@ export default function ProjectList({
                 <span className="font-medium text-neutral-800 dark:text-neutral-100">
                   {project.title}
                 </span>
-                {project.author && (
-                  <Sep />
-                )}
-                {project.author && (
-                  <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.author}</span>
-                )}
-                {stats && (
-                  <>
-                    <Sep />
-                    <Chip>씬 {stats.sceneCount}</Chip>
-                    <Sep />
-                    <Chip>{stats.charCount.toLocaleString()}자</Chip>
-                  </>
-                )}
+                {project.author && <><Sep /><span className="text-sm text-neutral-400 dark:text-neutral-500">{project.author}</span></>}
               </div>
 
-              <div className="mt-1 flex flex-col gap-0">
-                {stats?.documentCreatedAt && (
-                  <Chip>생성 {fmt(stats.documentCreatedAt)}</Chip>
-                )}
-                {stats?.documentUpdatedAt && (
-                  <Chip>수정 {fmt(stats.documentUpdatedAt)}</Chip>
-                )}
-                {!stats && (
-                  <Chip>수정 {fmt(project.updatedAt)}</Chip>
-                )}
+              {stats && (
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <Chip>씬 {stats.sceneCount}</Chip>
+                  <Sep />
+                  <Chip>{stats.charCount.toLocaleString()}자</Chip>
+                </div>
+              )}
+
+              <div className="mt-0.5 flex flex-col">
+                {stats?.documentCreatedAt && <Chip>생성 {fmt(stats.documentCreatedAt)}</Chip>}
+                {stats?.documentUpdatedAt && <Chip>수정 {fmt(stats.documentUpdatedAt)}</Chip>}
+                {!stats && <Chip>수정 {fmt(project.updatedAt)}</Chip>}
               </div>
             </Link>
 
