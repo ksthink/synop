@@ -229,12 +229,13 @@ body {
 
 /* ─── Stage Direction (지문) ─── */
 .tiptap .stage-direction {
-  color: #6b7280;
+  color: #4a4a4a;
   margin: 0.75em 0;
+  text-align: center;
 }
 
 .dark .tiptap .stage-direction {
-  color: #9ca3af;
+  color: #a3a3a3;
 }
 
 .tiptap .stage-direction:not(.is-empty)::before {
@@ -319,12 +320,13 @@ body {
 }
 
 .scenario-viewer .stage-direction {
-  color: #6b7280;
+  color: #4a4a4a;
   margin: 0.5em 0;
+  text-align: center;
 }
 
 .dark .scenario-viewer .stage-direction {
-  color: #9ca3af;
+  color: #a3a3a3;
 }
 
 .scenario-viewer .stage-direction::before {
